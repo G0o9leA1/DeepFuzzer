@@ -68,4 +68,4 @@ if __name__ == "__main__":
     filename = sys.argv[1]
     if not os.path.exists(filename):
         sys.exit("Error: File '" + sys.argv[1] + "' not found")
-    get_function_info(filename)
+    get_function_info(filename).info_dump()
