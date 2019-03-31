@@ -1,4 +1,7 @@
 import re
+import sys
+import os
+
 info_file = "test/function_info.txt"
 
 
@@ -37,7 +40,7 @@ class FnInfo:
             print('    '+include)
 
 
-def get_function_info(info_file=info_file):
+def get_function_info(info_file):
     function_info = open(info_file, 'r')
     for line in function_info:
         if line.split(':')[0] == 'FunctionName':
@@ -55,4 +58,11 @@ def get_function_info(info_file=info_file):
     fn.info_dump()
 
 if __name__ == "__main__":
-    get_function_info()
+    if len(sys.argv) < 2:
+        # sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
+        get_function_info(info_file)
+        exit()
+    filename = sys.argv[1]
+    if not os.path.exists(filename):
+        sys.exit("Error: File '" + sys.argv[1] + "' not found")
+    get_function_info(filename)
