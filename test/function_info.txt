@@ -1,4 +1,3 @@
-FunctionName:check_if_constant
-Input:const int16_t * data,int32_t num_elements
-ReturnType:int32_t
-Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+FunctionName:write_apev2_tags
+Input:apev2_state *state,FILE *file,size_t pos,apev2_hdr_ftr *header,apev2_item_list *list
+Include:#include <stdio.h>,#include <stdlib.h>,#include <stdint.h>,#include <string.h>,#include <assert.h>,#include "wavutils.h",#include "apev2.h"

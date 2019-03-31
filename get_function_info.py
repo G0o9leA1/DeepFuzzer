@@ -8,12 +8,15 @@ info_file = "test/function_info.txt"
 class FnInput:
     def __init__(self, string):
         self.var_name = re.findall(r'[\w]+$', string)[0]
-        var_type = re.findall(r'^[\w?\s]+', string)[0]
-        var_pointer = re.findall(r'\*', string)
+        var_type=string[:string.rfind(self.var_name)]
+        # var_type = re.findall(r'^[\w?\s]+', string)[0]
+        var_pointer = re.findall(r'\*', var_type)
+        self.pointer_num = len(var_pointer)
+        if self.pointer_num !=0:
+            var_type = var_type[:var_type.find("*")]
         if var_type[-1] == ' ':
             var_type = var_type[:-1]
         self.var_type = var_type
-        self.pointer_num = len(var_pointer)
 
     def input_dump(self):
         print('    Type: ' + self.var_type)
@@ -40,7 +43,7 @@ class FnInfo:
             print('    '+include)
 
 
-def get_function_info(info_file):
+def get_function_info(info_file=info_file):
     function_info = open(info_file, 'r')
     for line in function_info:
         if line.split(':')[0] == 'FunctionName':
@@ -55,12 +58,12 @@ def get_function_info(info_file):
             for include in ((line.split('\n')[0]).split(':')[1]).split(','):
                 fn.includes.append(include)
     function_info.close()
-    fn.info_dump()
+    return fn
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         # sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
-        get_function_info(info_file)
+        get_function_info(info_file).info_dump()
         exit()
     filename = sys.argv[1]
     if not os.path.exists(filename):
