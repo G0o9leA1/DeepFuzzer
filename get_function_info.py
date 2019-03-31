@@ -38,7 +38,6 @@ class FnInfo:
 
 
 def get_function_info(info_file=info_file):
-    print('fuck')
     function_info = open(info_file, 'r')
     for line in function_info:
         if line.split(':')[0] == 'FunctionName':
