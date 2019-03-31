@@ -37,7 +37,10 @@ name = final[0].split()
 
 newfile = open("output.txt", "w")
 
-line1 = "FunctionName:" + name[1] + "\n"
+if (len(name) == 2):
+	line1 = "FunctionName:" + name[1] + "\n"
+else:
+	line1 = "FunctionName:" + name[0] + "\n"
 newfile.write(line1)
 
 line2 = "Input:"
@@ -48,11 +51,12 @@ for part in final2:
 	if (bool):
 		line2 = line2 + part + ","
 	bool = True
+line2 = line2[:-1]
 line2 += "\n"
 newfile.write(line2)
 
-line3 = "ReturnType:" + name[0] + "\n"
-newfile.write(line3)
+#line3 = "ReturnType:" + name[0] + "\n"
+#newfile.write(line3)
 
 #grab the includes
 line4 = "Include:"
@@ -60,6 +64,7 @@ for line in file:
 	if "#include" in line:
 		line = line.replace("\n", "").replace('\r',"")
 		line4 = line4 + line + ","
+line4 = line4[:-1]
 line4 = line4.rstrip('\r\n')
 newfile.write(line4)
 
