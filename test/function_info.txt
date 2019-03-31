@@ -1,5 +1,4 @@
-FunctionName: check_if_constant
-Input: (const int16_t *data,int32_t num_elements)
-ReturnType: int32_t
-Include: (#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h")
-
+FunctionName:check_if_constant
+Input:const int16_t * data,int32_t num_elements
+ReturnType:int32_t
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
