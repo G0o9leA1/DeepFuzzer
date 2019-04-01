@@ -105,6 +105,7 @@ def input_wrapper(filename,formalized_fn):
     infile.write(string)
     string = "fseek(infile,0,SEEK_END);\n"
     string += "int fileSize = (int)ftell(infile);\n"
+    string += "rewind(infile)"
     infile.write(string)
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = "int minSize ="
@@ -129,6 +130,7 @@ def input_wrapper(filename,formalized_fn):
             infile.write(string)
             string = ""
             string = string + para.var_type + " " + para.var_name + "=" + "*df_buffer_" + para.var_name + ";"
+            string = string + "free(" + "df_buffer" + para.var_name + ");"
             infile.write(string)
     infile.close()
     for para in regular_para_nonepointer:

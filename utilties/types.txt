@@ -35,5 +35,5 @@ uint16_t
 uint32_t
 int64_t
 uint64_t
-FILE
 size_t
+boolean
