@@ -98,7 +98,7 @@ def generate_fuzz(filename,function):
         string = string[:-1]
     string = function.fn_name + "(" + string + ");\n"
     infile.write(string)
-    infile.write("return 0;\n}")
+    infile.write("return 0;\n}\n")
     infile.close()
 
 
