@@ -43,7 +43,7 @@ class FnInfo:
             print('    '+include)
 
 
-def get_function_info(info_file=info_file):
+def get_info(info_file=info_file):
     function_info = open(info_file, 'r')
     for line in function_info:
         if line.split(':')[0] == 'FunctionName':
@@ -63,9 +63,9 @@ def get_function_info(info_file=info_file):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         # sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
-        get_function_info(info_file).info_dump()
+        get_info(info_file).info_dump()
         exit()
     filename = sys.argv[1]
     if not os.path.exists(filename):
         sys.exit("Error: File '" + sys.argv[1] + "' not found")
-    get_function_info(filename).info_dump()
+    get_info(filename).info_dump()
