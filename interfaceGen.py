@@ -6,7 +6,6 @@ import get_function_info as info
 
 info_file = "test/function_info.txt"
 
-fn = info.get_info()
 
 
 def get_regular_types(filename):

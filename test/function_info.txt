@@ -1,3 +1,3 @@
 FunctionName:write_apev2_tags
-Input:int a,double b,const int16_t d,int32_t f,char ** arss
+Input:int a,double b,const int16_t d,int32_t f,uint16_t xs
 Include:#include <stdio.h>,#include <stdlib.h>,#include <stdint.h>,#include <string.h>,#include <assert.h>,#include "wavutils.h",#include "apev2.h"
