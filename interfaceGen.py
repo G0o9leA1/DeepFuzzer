@@ -24,15 +24,17 @@ def function_checker(function):
     struct_para = []
     for para in function.inputs:
         if not is_regular_type(types, para.var_type):
-            print("Self Defined Structs Detected: " + para.var_type + "\n")
+            print("Self Defined Structs Detected: " + para.var_type + " " + para.var_name + "\n")
             struct_para.append(para)
-            continue
-        elif para.pointer_num != 0:
-            pointer_counter += 1
-            if pointer_counter >= 2:
-                print("Function Not Yet Supported\n")
-                break
-        regular_para.append(para)
+        else:
+            #para.pointer_num != 0:
+            print("Regular Type Detected: " + para.var_type + " " + para.var_name + "\n")
+            if para.pointer_num != 0:
+                pointer_counter += 1
+                if pointer_counter >= 2:
+                    print("Function Not Yet Supported\n")
+                    break
+            regular_para.append(para)
     return [regular_para, struct_para]
 
 
