@@ -126,11 +126,11 @@ def input_wrapper(filename,formalized_fn):
             # fread(buffer,sizeof(int16_t),1,infile);
             infile.write(string)
             string = ""
-            string = string + "fread(" + "df_buffer" + para.var_name + ",sizeof(" + para.var_type + "), 1 , infile); "
+            string = string + "fread(" + "df_buffer_" + para.var_name + ",sizeof(" + para.var_type + "), 1 , infile); "
             infile.write(string)
             string = ""
             string = string + para.var_type + " " + para.var_name + "=" + "*df_buffer_" + para.var_name + ";"
-            string = string + "free(" + "df_buffer" + para.var_name + ");"
+            string = string + "free(" + "df_buffer_" + para.var_name + ");"
             infile.write(string)
     infile.close()
     for para in regular_para_nonepointer:
