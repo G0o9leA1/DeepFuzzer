@@ -51,12 +51,13 @@ def generate_comment(filename, function):
     infile = open(filename, "at")
     string = "/*\n* Generate by Deepfuzzer\n"
     infile.write(string)
-    string = "*Target Function: " +function.fn_name + "\n"
+    string = "* Target Function: " +function.fn_name + "\n"
     infile.write(string)
     now = datetime.datetime.now()
-    string = "Time: " + now
+    string = "* Time: " + str(now)+"\n*/\n\n"
     infile.write(string)
     infile.close()
+
 
 def generate_header(filename, function):
     infile = open(filename, "at")
@@ -113,7 +114,8 @@ def generate_src(function):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         # sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
-        get_regular_types("utilties/types.txt")
+        fn = info.get_info("test/function_info.txt")
+        generate_src(fn)
         # fn=info.get_function_info(info_file)
         # filename=generate_filename(fn)
         # generate_header(filename,fn)
