@@ -1,5 +1,6 @@
 import sys
 import os
+import datetime
 import get_function_info as info
 
 info_file = "test/function_info.txt"
@@ -18,7 +19,7 @@ def get_regular_types(filename):
 
 
 def function_checker(function):
-    types=get_regular_types("utilties/types.txt")
+    types = get_regular_types("utilties/types.txt")
     pointer_counter = 0
     regular_para = []
     struct_para = []
@@ -43,16 +44,23 @@ def is_regular_type(regular_type, var_type):
 
 
 def generate_filename(function):
-    return function.fn_name+"_fuzz.c"
+    return "cache/" + function.fn_name + "_fuzz.c"
 
 
-def generate_comment(filename,function):
-    exit()
-
-
-def generate_header(filename,function):
+def generate_comment(filename, function):
     infile = open(filename, "at")
-    string=""
+    string = "/*\n* Generate by Deepfuzzer\n"
+    infile.write(string)
+    string = "*Target Function: " +function.fn_name + "\n"
+    infile.write(string)
+    now = datetime.datetime.now()
+    string = "Time: " + now
+    infile.write(string)
+    infile.close()
+
+def generate_header(filename, function):
+    infile = open(filename, "at")
+    string = ""
     for include in function.includes:
         string += include+"\n"
     string += "\n"+"#include <inttypes.h>\n"+"#include <stdlib.h>\n"
@@ -64,7 +72,7 @@ def generate_debug(content):
     exit()
 
 
-def input_wrapper(filename):
+def input_wrapper(filename,formalized_fn):
     infile = open(filename, "at")
     string = "int main(int argc, char **argv)\n{\n"
     string += 'FILE *infile = fopen(argv[1],"rb");\n'
@@ -91,6 +99,15 @@ def generate_fuzz(filename,function):
     infile.write(string)
     infile.write("return 0;\n}")
     infile.close()
+
+
+def generate_src(function):
+    filename = generate_filename(function)
+    formalized_fn = function_checker(function)
+    generate_comment(filename, function)
+    generate_header(filename, function)
+    input_wrapper(filename, formalized_fn)
+    generate_fuzz(filename, function)
 
 
 if __name__ == "__main__":

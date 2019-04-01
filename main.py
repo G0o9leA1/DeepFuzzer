@@ -13,4 +13,4 @@ if __name__ == "__main__":
         sys.exit("Error: File '" + sys.argv[1] + "' not found")
     list_function.main(filename)
     fn = get_function_info.get_info("cache/function_info.txt")
-    gen.function_checker(fn)
+    gen.generate_src(fn)
