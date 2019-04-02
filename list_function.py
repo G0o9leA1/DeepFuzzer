@@ -67,16 +67,16 @@ def main(filename, compiledlib, includefold):
 			line4 = line4 + line + ","
 	line4 = line4[:-1]
 	line4 = line4.rstrip('\r\n')
-	newfile.write(line4)
+	newfile.write(line4+"\n")
 
 	line5 = "Source:" + filename
-	newfile.write(line5)
+	newfile.write(line5+"\n")
 
 	line6 = "Compiled Lib:" + compiledlib
-	newfile.write(line6)
+	newfile.write(line6+"\n")
 
 	line7 = "Include Folder" + includefold
-	newfile.write(line7)
+	newfile.write(line7+"\n")
 
 	file.close()
 	newfile.close()
