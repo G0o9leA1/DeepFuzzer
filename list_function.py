@@ -1,7 +1,7 @@
 #MUST INSTALL CTAGS PACKAGE BEFORE USE (apt-get install ctags)
 import sys, os, re
 
-def main(filename):
+def main(filename, compiledlib, includefold):
 
 
 	file = open(filename, "r")
@@ -68,6 +68,15 @@ def main(filename):
 	line4 = line4[:-1]
 	line4 = line4.rstrip('\r\n')
 	newfile.write(line4)
+
+	line5 = "Source:" + filename
+	newfile.write(line5)
+
+	line6 = "Compiled Lib:" + compiledlib
+	newfile.write(line6)
+
+	line7 = "Include Folder" + includefold
+	newfile.write(line7)
 
 	file.close()
 	newfile.close()
