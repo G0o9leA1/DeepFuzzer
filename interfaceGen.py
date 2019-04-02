@@ -105,7 +105,7 @@ def input_wrapper(filename,formalized_fn):
     infile.write(string)
     string = "fseek(infile,0,SEEK_END);\n"
     string += "int fileSize = (int)ftell(infile);\n"
-    string += "rewind(infile)"
+    string += "rewind(infile);"
     infile.write(string)
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = "int minSize ="
@@ -137,7 +137,6 @@ def input_wrapper(filename,formalized_fn):
         para.input_dump()
     for para in regular_para_pointer:
         para.input_dump()
-
 
 
 def define_var():
@@ -174,7 +173,7 @@ def generate_src(function):
 
 
 def formatter(filename):
-    os.system("clang-format " + filename + " > " + filename + ".format")
+    os.system('clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4}" ' + filename + " > " + filename + ".format")
     os.system("mv "+filename + ".format " + filename)
 
 

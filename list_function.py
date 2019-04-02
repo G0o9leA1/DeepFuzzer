@@ -83,5 +83,5 @@ def main(filename, compiledlib, includefold):
 
 
 if __name__ == "__main__":
-	filename = sys.argv[1]
-	main(filename)
+	# filename = sys.argv[1]
+	main(sys.argv[1],sys.argv[2],sys.argv[3])
