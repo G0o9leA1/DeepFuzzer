@@ -1,7 +1,7 @@
 # DeepFuzzer: 
 ## To-do list
  - Generate function infos contained in the libs
- - For the function only contains regular data type, generate the fuzzable executable file
+ - generate the fuzzable executable file
  - Deal with the unconventional target
  
 ## Dependences:
@@ -9,9 +9,11 @@
     sudo apt install clang-format
 
 ## Test:
+    python3 interfaceGen.py
+ 
+ For function in the test/function_info.txt  
+ Generated file is in the cache/<function_name>fuzzer.c
     
-    
-
 ## Usage
     python3 main.py <filename>
  
