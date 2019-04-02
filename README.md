@@ -5,9 +5,13 @@
  - Deal with the unconventional target
  
 ## Dependences:
- - sudo apt install ctags
- - sudo apt install clang-format
- 
+    sudo apt install ctags
+    sudo apt install clang-format
+
+## Test:
+    
+    
+
 ## Usage
- - python3 main.py \<filename>
+    python3 main.py <filename>
  
