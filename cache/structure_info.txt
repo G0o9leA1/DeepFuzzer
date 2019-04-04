@@ -1,0 +1,6 @@
+char: preamble[8];
+int32_t: version_number;
+uint32_t: tag_size;
+uint32_t: item_count;
+int32_t: flags;
+char: reserved[8];
