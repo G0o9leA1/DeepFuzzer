@@ -1,6 +1,6 @@
 import sys, os, re
 
-def meepers(struct, sourcecode, headerfolder):
+def structfind(struct, sourcecode, headerfolder):
     sourcecode = open(sourcecode, "r+")
     newfile = open("cache/structure_info.txt", "w")
     found = False
@@ -11,7 +11,7 @@ def meepers(struct, sourcecode, headerfolder):
         while(found == False):
             headerfile = open(filename, "r+")
             parser(headerfile)
-        
+
 def parser(file):
     target = "struct " + struct
     line = file.readline()
@@ -46,4 +46,4 @@ def parser(file):
     newfile.close()
 
 
-meepers('apev2_hdr_ftr', 'test/structtest.c', 'a')
+structfind('apev2_hdr_ftr', 'test/structtest.c', 'a')
