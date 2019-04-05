@@ -3,37 +3,46 @@ import sys, os, re
 def meepers(struct, sourcecode, headerfolder):
     sourcecode = open(sourcecode, "r+")
     newfile = open("cache/structure_info.txt", "w")
-    target = "struct " + struct
     found = False
 
-    line = sourcecode.readline()
+    parser(sourcecode)
+
+    for filename in os.listdir(headerfolder):
+        while(found == False):
+            headerfile = open(filename, "r+")
+            parser(headerfile)
+        
+def parser(file):
+    target = "struct " + struct
+    line = file.readline()
     while target not in line:
-        line = sourcecode.readline()
+        line = file.readline()
 
     if target in line:
         #case of struct x {
         if '{' in line:
             structinfo = line
-            structinfo = sourcecode.readline()
+            structinfo = file.readline()
             while '}' not in structinfo:
                 list = structinfo.split()
                 text = list[0] + ": " + ''.join(list[1:]) + '\n';
                 newfile.write(text)
 
-                structinfo = sourcecode.readline()
+                structinfo = file.readline()
         #case of struct x
         #{
         else:
-            structinfo = sourcecode.readline()
-            structinfo = sourcecode.readline()
+            structinfo = file.readline()
+            structinfo = file.readline()
             while '}' not in structinfo:
                 list = structinfo.split()
                 text = list[0] + ": " + ''.join(list[1:]) + '\n';
                 newfile.write(text)
 
-                structinfo = sourcecode.readline()
+                structinfo = file.readline()
 
-    sourcecode.close()
+    found = True
+    file.close()
     newfile.close()
 
 
