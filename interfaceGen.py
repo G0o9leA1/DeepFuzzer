@@ -100,51 +100,134 @@ def generate_debug(content):
 
 def input_wrapper(filename,formalized_fn):
     infile = open(filename, "at")
-    string = "int main(int argc, char **argv)\n{\n"
-    string += 'FILE *infile = fopen(argv[1],"rb");\n'
+    string = "int main(int argc, char **argv){"
+    string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
     infile.write(string)
-    string = "fseek(infile,0,SEEK_END);\n"
-    string += "int fileSize = (int)ftell(infile);\n"
-    string += "rewind(infile);"
+    string = "fseek(infile,0,SEEK_END);"
+    string += "int fileSize = (int)ftell(infile);"
+    string += "rewind(infile);\n\n"
     infile.write(string)
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
-    string = "int minSize ="
+    string = ""
     if len(struct_para) == 0:
-        for para in regular_para_nonepointer:
-            string = string + " sizeof(" + para.var_type + ") +"
+        if regular_para_pointer is None:
+            infile.write("int pointer_size = 1;")
+        else:
+            pointer_size = 0
+            for para in regular_para_pointer:
+                pointer_size += para.pointer_num
+            infile.write("int pointer_size =" + str(pointer_size) + ";")
+
+        # if (fileSize < sizeof(uint16_t) * pointer_size) {
+        # return 0;
+        # }
+
+        infile.write("if(fileSize < sizeof(uint16_t)*pointer_size){fclose(infile);return 0;}\n\n")
+
         for para in regular_para_pointer:
-            string = string + " sizeof(" + para.var_type + ") +"
-        if string[-1] == "+":
-            string = string[:-2] + ";\n"
+            for i in range(para.pointer_num):
+                string = string + "uint16_t d" + str(i+1) + "_" + para.var_name + ";\n"
+                # fread( & d1_data, sizeof(uint16_t), 1, infile);
+                string = string + "fread(&d" + str(i+1) + "_" + para.var_name + ",sizeof(uint16_t),1,infile);\n\n"
         infile.write(string)
-        string = "if( minSize>fileSize ) {fclose(infile);return 0;}"
+        # int minSize = sizeof(uint16_t) * pointer_size + sizeof(int) * d1_data + sizeof(int32_t);
+        string = "int minSize = sizeof(uint16_t)*pointer_size"
+
+        for para in regular_para_pointer:
+            string = string + "+sizeof(" + para.var_type + ")"
+            for i in range(para.pointer_num):
+                string = string + "*d" + str(i+1) + "_" + para.var_name
+
+        for para in regular_para_nonepointer:
+            string = string + "+sizeof(" + para.var_type + ")"
+
+        string = string + ";\n"
         infile.write(string)
+        string = "if( minSize>fileSize ) {fclose(infile);return 0;}\n\n"
+        infile.write(string)
+
+        # int reference_data[d1_data];
+        # for (int i = 0; i < d1_data; ++i) {
+        #     int tmp_data;
+        # fread( & tmp_data, sizeof(int), 1, infile);
+        # reference_data[i] = tmp_data;
+        # }
+        # const int16_t * data = reference_data;
+
+        for para in regular_para_pointer:
+            string = ""
+
+            # int reference_data[d1_data];
+            if para.var_type.find("const") == 0:
+                string = string + para.var_type[6:]
+            else:
+                string = string + para.var_type
+            string = string + " reference_" + para.var_name + "["
+            for i in range(para.pointer_num):
+                string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+            string = string[:-1] + "];"
+
+            # for (int i = 0; i < d1_data; ++i) {
+            string = string + "for(long int i=0;i<"
+            for i in range(para.pointer_num):
+                string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+            string = string[:-1] + ";++i){"
+            #     int tmp_data;
+            if para.var_type.find("const") == 0:
+                string = string + para.var_type[6:]
+            else:
+                string = string + para.var_type
+            string = string + " tmp" + "_" + para.var_name + ";"
+
+            # fread( & tmp_data, sizeof(int), 1, infile);
+            string = string + "fread(&" + "tmp" + "_" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);"
+
+            # reference_data[i] = tmp_data;
+            string = string + " reference_" + para.var_name + "[i] = " + "tmp" + "_" + para.var_name + ";}"
+
+            # const int16_t * data = reference_data;
+            string = string + para.var_type + " "
+            for i in range(para.pointer_num):
+                string = string + "*"
+            string = string + para.var_name + "= reference_" + para.var_name + ";\n\n"
+            infile.write(string)
+
         for para in regular_para_nonepointer:
             string = ""
-            string = string + para.var_type + " * df_buffer_" + para.var_name + "="
-            string = string + "(" + para.var_type + "*)" + "malloc("+" sizeof(" + para.var_type +")"+");\n"
-            # fread(buffer,sizeof(int16_t),1,infile);
+            string = string + para.var_type + " " + para.var_name + ";"
+            # fread(&num_elements, sizeof(int32_t), 1, infile);
+            string = string + "fread(&" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);\n\n"
             infile.write(string)
-            string = ""
-            string = string + "fread(" + "df_buffer_" + para.var_name + ",sizeof(" + para.var_type + "), 1 , infile); "
-            infile.write(string)
-            string = ""
-            string = string + para.var_type + " " + para.var_name + "=" + "*df_buffer_" + para.var_name + ";"
-            string = string + "free(" + "df_buffer_" + para.var_name + ");"
-            infile.write(string)
-    infile.close()
     for para in regular_para_nonepointer:
         para.input_dump()
     for para in regular_para_pointer:
         para.input_dump()
+    infile.write("fclose(infile);\n\n")
 
 
 def define_var():
     exit()
 
 
-def allocate_mem():
-    exit()
+
+def allocate_mem(para, buffer_name, buffer_type, buffer_count, filename):
+    infile = open(filename, "at")
+    string = ""
+    string = string + buffer_type + " * " + buffer_name + "="
+    string = string + "(" + buffer_type + "*)" + "malloc(" + " sizeof(" + buffer_type + ")*" + str(
+        buffer_count) + ");\n"
+    # fread(buffer,sizeof(int16_t),1,infile);
+    infile.write(string)
+    string = ""
+    string = string + "fread(" + buffer_name + ",sizeof(" + buffer_type + "), " + str(buffer_count) + " , infile); "
+    infile.write(string)
+    string = ""
+    string = string + para.var_type + " " + para.var_name + "=" + "*df_buffer_" + para.var_name + ";"
+    string = string + "free(" + buffer_name + ");\n\n"
+    infile.write(string)
+    infile.close()
+
+# def read_data()
 
 
 def generate_fuzz(filename,function):
@@ -173,7 +256,8 @@ def generate_src(function):
 
 
 def formatter(filename):
-    os.system('clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4}" ' + filename + " > " + filename + ".format")
+    os.system(
+        'clang-format -style="{BasedOnStyle: Chromium, IndentWidth: 4}" ' + filename + " > " + filename + ".format")
     os.system("mv "+filename + ".format " + filename)
 
 

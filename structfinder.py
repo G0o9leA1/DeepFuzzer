@@ -25,7 +25,7 @@ def parser(file):
             structinfo = file.readline()
             while '}' not in structinfo:
                 list = structinfo.split()
-                text = list[0] + ": " + ''.join(list[1:]) + '\n';
+                text = list[0] + ": " + ''.join(list[1:]) + '\n'
                 newfile.write(text)
 
                 structinfo = file.readline()
@@ -36,7 +36,7 @@ def parser(file):
             structinfo = file.readline()
             while '}' not in structinfo:
                 list = structinfo.split()
-                text = list[0] + ": " + ''.join(list[1:]) + '\n';
+                text = list[0] + ": " + ''.join(list[1:]) + '\n'
                 newfile.write(text)
 
                 structinfo = file.readline()

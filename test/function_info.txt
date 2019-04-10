@@ -1,3 +1,7 @@
-FunctionName:write_apev2_tags
-Input:int a,double b,const int16_t d,int32_t f,uint16_t xs
-Include:#include <stdio.h>,#include <stdlib.h>,#include <stdint.h>,#include <string.h>,#include <assert.h>,#include "wavutils.h",#include "apev2.h"
+FunctionName:check_if_constant
+Input:const int16_t *data,int32_t num_elements
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/selaenc
+Include Folder../sela/include/
+
