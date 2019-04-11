@@ -1,15 +1,16 @@
-import sys, os, re
+import sys, os, re, glob
 
 def main(struct, sourcecode, headerfolder):
     sourcecode = open(sourcecode, "r+")
 
     found = False
 
-    parser(struct, sourcecode)
+    found = parser(struct, sourcecode)
 
     if(headerfolder != ""):
-        for filename in os.listdir(headerfolder):
-            while(found == False):
+        headerfolder = headerfolder + "*"
+        for filename in glob.glob(headerfolder):
+            if(found == False):
                 headerfile = open(filename, "r+")
                 found = parser(struct, headerfile)
 
@@ -18,8 +19,11 @@ def parser(struct, file):
 
     target = "struct " + struct
     line = file.readline()
+    #print(line)
     while target not in line:
         line = file.readline()
+        if not line:
+            break
 
     if target in line:
         #case of struct x {
