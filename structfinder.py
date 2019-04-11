@@ -11,7 +11,7 @@ def structfind(struct, sourcecode, headerfolder):
         for filename in os.listdir(headerfolder):
             while(found == False):
                 headerfile = open(filename, "r+")
-                parser(struct, headerfile)
+                found = parser(struct, headerfile)
 
 def parser(struct, file):
     newfile = open("cache/structure_info.txt", "w")
@@ -44,10 +44,14 @@ def parser(struct, file):
 
                 structinfo = file.readline()
 
-        found = True
+        file.close()
+        newfile.close()
+        return True
 
     file.close()
     newfile.close()
+    return False
+
 
 
 structfind('apev2_hdr_ftr', 'test/structtest.c', '')
