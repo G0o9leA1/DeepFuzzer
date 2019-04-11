@@ -144,7 +144,7 @@ def new_wrapper(filename,formalized_fn):
             for para in regular_para_pointer:
                 read_array_length(para, filename)
         for para in regular_para_nonepointer:
-            read_regular_type(para.var_name,para.var_type,filename)
+            read_regular_type(para.var_type,para.var_name,filename)
 
 
 
@@ -159,6 +159,7 @@ def input_wrapper(filename,formalized_fn):
     string += "int fileSize = (int)ftell(infile);"
     string += "rewind(infile);\n\n"
     infile.write(string)
+    infile.close()
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = ""
     if len(struct_para) == 0:

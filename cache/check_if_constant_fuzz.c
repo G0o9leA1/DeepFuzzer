@@ -1,7 +1,7 @@
 /*
  * Generate by Deepfuzzer
  * Target Function: check_if_constant
- * Time: 2019-04-11 16:20:24.620503
+ * Time: 2019-04-11 16:26:44.718955
  */
 
 #include <limits.h>
@@ -17,8 +17,8 @@ int pointer_size_data = 1;
 uint16_t d1_data;
 fread(&d1_data, sizeof(uint16_t), 1, infile);
 
-num_elements int32_t;
-fread(&int32_t, sizeof(num_elements), 1, infile);
+int32_t num_elements;
+fread(&num_elements, sizeof(int32_t), 1, infile);
 int main(int argc, char** argv) {
     FILE* infile = fopen(argv[1], "rb");
 
