@@ -5,14 +5,14 @@ def structfind(struct, sourcecode, headerfolder):
     newfile = open("cache/structure_info.txt", "w")
     found = False
 
-    parser(sourcecode)
+    parser(struct, sourcecode)
 
     for filename in os.listdir(headerfolder):
         while(found == False):
             headerfile = open(filename, "r+")
-            parser(headerfile)
+            parser(struct, headerfile)
 
-def parser(file):
+def parser(struct, file):
     target = "struct " + struct
     line = file.readline()
     while target not in line:
