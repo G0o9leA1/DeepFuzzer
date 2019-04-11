@@ -1,5 +1,6 @@
 import sys, os, re, glob
 
+
 def main(struct, sourcecode, headerfolder):
     sourcecode = open(sourcecode, "r+")
 
@@ -13,6 +14,7 @@ def main(struct, sourcecode, headerfolder):
             if(found == False):
                 headerfile = open(filename, "r+")
                 found = parser(struct, headerfile)
+
 
 def parser(struct, file):
     newfile = open("cache/structure_info.txt", "w")
@@ -56,9 +58,7 @@ def parser(struct, file):
     newfile.close()
     return False
 
+
 if __name__ == "__main__":
-	# filename = sys.argv[1]
-	main(sys.argv[1],sys.argv[2],sys.argv[3])
-
-
-#structfind('apev2_hdr_ftr', 'test/structtest.c', '')
+    # filename = sys.argv[1]
+    main(sys.argv[1],sys.argv[2],sys.argv[3])
