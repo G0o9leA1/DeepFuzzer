@@ -1,6 +1,6 @@
 import sys, os, re
 
-def structfind(struct, sourcecode, headerfolder):
+def main(struct, sourcecode, headerfolder):
     sourcecode = open(sourcecode, "r+")
 
     found = False
@@ -52,6 +52,9 @@ def parser(struct, file):
     newfile.close()
     return False
 
+if __name__ == "__main__":
+	# filename = sys.argv[1]
+	main(sys.argv[1],sys.argv[2],sys.argv[3])
 
 
-structfind('apev2_hdr_ftr', 'test/structtest.c', '')
+#structfind('apev2_hdr_ftr', 'test/structtest.c', '')
