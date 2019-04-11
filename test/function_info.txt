@@ -4,4 +4,3 @@ Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <mat
 Source:../sela/core/lpc.c
 Compiled Lib:../sela/selaenc
 Include Folder../sela/include/
-

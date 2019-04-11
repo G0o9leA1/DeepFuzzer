@@ -98,6 +98,58 @@ def generate_debug(content):
     exit()
 
 
+def read_regular_type(var_type, var_name, file_name):
+    infile = open(file_name, 'at')
+    # int32_t num_elements;
+    string = var_type+" "+var_name+";"
+    # fread(&num_elements, sizeof(int32_t), 1, infile);
+    string = string + "fread(&" + var_name + ", sizeof(" + var_type + "),1,infile);"
+    print(string)
+    infile.write(string)
+    infile.close()
+    size = "sizeof(" + var_type + ")"
+    return size
+
+
+def read_array_length(para, file_name):
+    infile = open(file_name, 'at')
+    # int pointer_size = 1;
+    string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
+    for i in range(para.pointer_num):
+        string = string + "uint16_t d" + str(i + 1) + "_" + para.var_name + ";\n"
+        # fread( & d1_data, sizeof(uint16_t), 1, infile);
+        string = string + "fread(&d" + str(i + 1) + "_" + para.var_name + ",sizeof(uint16_t),1,infile);\n\n"
+    print(string)
+    infile.write(string)
+    infile.close()
+
+    # sizeof(uint16_t) * pointer_size
+    size = "sizeof(uint16_t) * " + "pointer_size_" + para.var_name
+    return size
+
+
+def new_wrapper(filename,formalized_fn):
+    infile = open(filename, "at")
+    string = "int main(int argc, char **argv){"
+    string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
+    infile.write(string)
+    string = "fseek(infile,0,SEEK_END);"
+    string += "int fileSize = (int)ftell(infile);"
+    string += "rewind(infile);\n\n"
+    infile.write(string)
+    [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
+    string = ""
+    if len(struct_para) == 0:
+        if regular_para_pointer is not None:
+            for para in regular_para_pointer:
+                read_array_length(para, filename)
+        for para in regular_para_nonepointer:
+            read_regular_type(para.var_name,para.var_type,filename)
+
+
+
+
+
 def input_wrapper(filename,formalized_fn):
     infile = open(filename, "at")
     string = "int main(int argc, char **argv){"
@@ -209,7 +261,6 @@ def define_var():
     exit()
 
 
-
 def allocate_mem(para, buffer_name, buffer_type, buffer_count, filename):
     infile = open(filename, "at")
     string = ""
@@ -250,7 +301,8 @@ def generate_src(function):
     formalized_fn = function_checker(function)
     generate_comment(filename, function)
     generate_header(filename, function)
-    input_wrapper(filename, formalized_fn)
+    # input_wrapper(filename, formalized_fn)
+    new_wrapper(filename, formalized_fn)
     generate_fuzz(filename, function)
     formatter(filename)
 

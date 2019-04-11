@@ -6,6 +6,7 @@ import list_function
 import get_function_info
 
 if __name__ == "__main__":
+    # python3 main.py
     if len(sys.argv) < 3:
         sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
     filename = sys.argv[1]
