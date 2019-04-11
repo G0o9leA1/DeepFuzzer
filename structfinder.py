@@ -44,7 +44,8 @@ def parser(struct, file):
 
                 structinfo = file.readline()
 
-    found = True
+        found = True
+
     file.close()
     newfile.close()
 
