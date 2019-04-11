@@ -98,20 +98,22 @@ def generate_debug(content):
     exit()
 
 
-def read_regular_type(var_type, var_name, file_name):
+def read_regular_type(var_type, var_name, file_name, minSize):
+    minSize = minSize + "+sizeof(" + var_type + ")"
+    check_file_size(minSize,file_name)
     infile = open(file_name, 'at')
     # int32_t num_elements;
     string = var_type+" "+var_name+";"
     # fread(&num_elements, sizeof(int32_t), 1, infile);
     string = string + "fread(&" + var_name + ", sizeof(" + var_type + "),1,infile);"
-    print(string)
     infile.write(string)
     infile.close()
-    size = "sizeof(" + var_type + ")"
-    return size
+    return minSize
 
 
-def read_array_length(para, file_name):
+def read_array_length(para, file_name, minSize):
+    minSize = minSize + "+sizeof(uint16_t) * " + "pointer_size_" + para.var_name
+    check_file_size(minSize, file_name)
     infile = open(file_name, 'at')
     # int pointer_size = 1;
     string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
@@ -123,9 +125,64 @@ def read_array_length(para, file_name):
     infile.write(string)
     infile.close()
 
-    # sizeof(uint16_t) * pointer_size
-    size = "sizeof(uint16_t) * " + "pointer_size_" + para.var_name
-    return size
+    return minSize
+
+
+def read_array_data(para, file_name, minSize):
+    string = ""
+    for i in range(para.pointer_num):
+        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+    minSize = minSize + "+sizeof("+ para.var_type + ")*" +string[:-1]
+    check_file_size(minSize,file_name)
+    infile = open(file_name, 'at')
+    string = ""
+
+    # int reference_data[d1_data];
+    if para.var_type.find("const") == 0:
+        string = string + para.var_type[6:]
+    else:
+        string = string + para.var_type
+    string = string + " reference_" + para.var_name + "["
+    for i in range(para.pointer_num):
+        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+    string = string[:-1] + "];"
+
+    # for (int i = 0; i < d1_data; ++i) {
+    string = string + "for(long int i=0;i<"
+    for i in range(para.pointer_num):
+        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+    string = string[:-1] + ";++i){"
+    #     int tmp_data;
+    if para.var_type.find("const") == 0:
+        string = string + para.var_type[6:]
+    else:
+        string = string + para.var_type
+    string = string + " tmp" + "_" + para.var_name + ";"
+
+    # fread( & tmp_data, sizeof(int), 1, infile);
+    string = string + "fread(&" + "tmp" + "_" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);"
+
+    # reference_data[i] = tmp_data;
+    string = string + " reference_" + para.var_name + "[i] = " + "tmp" + "_" + para.var_name + ";}"
+
+    # const int16_t * data = reference_data;
+    string = string + para.var_type + " "
+    for i in range(para.pointer_num):
+        string = string + "*"
+    string = string + para.var_name + "= reference_" + para.var_name + ";\n\n"
+    infile.write(string)
+    return minSize
+
+
+def check_file_size(size, file_name):
+    infile = open(file_name, 'at')
+    # if (fileSize < sizeof(uint16_t) * pointer_size) {
+    # fclose(infile);
+    # return 0;
+    # }
+    string = "if(fileSize < " + size + "){fclose(infile);return 0;}"
+    infile.write(string)
+    infile.close()
 
 
 def new_wrapper(filename,formalized_fn):
@@ -134,17 +191,20 @@ def new_wrapper(filename,formalized_fn):
     string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
     infile.write(string)
     string = "fseek(infile,0,SEEK_END);"
-    string += "int fileSize = (int)ftell(infile);"
+    string += "int fileSize = (int)ftell(infile);int minSize = 0;"
     string += "rewind(infile);\n\n"
     infile.write(string)
+    infile.close()
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = ""
+    minSize = "minSize"
     if len(struct_para) == 0:
         if regular_para_pointer is not None:
             for para in regular_para_pointer:
-                read_array_length(para, filename)
+                minSize = read_array_length(para, filename, minSize)
+                minSize = read_array_data(para,filename, minSize)
         for para in regular_para_nonepointer:
-            read_regular_type(para.var_type,para.var_name,filename)
+            minSize = read_regular_type(para.var_type,para.var_name,filename,minSize)
 
 
 

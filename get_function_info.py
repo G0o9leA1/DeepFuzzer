@@ -60,6 +60,7 @@ def get_info(info_file=info_file):
     function_info.close()
     return fn
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         # sys.exit("Usage: python " + 'get_function_info.py' + " FileName")
