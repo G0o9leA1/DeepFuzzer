@@ -61,7 +61,7 @@ def compile_gen(compiler,include,linker):
             continue
         # string = compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2]
         os.popen(
-            compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o" + c_file[:-2])
+            compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
 
 
 if __name__ == "__main__":
