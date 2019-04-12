@@ -56,11 +56,13 @@ def compile_gen(compiler,include,linker):
     c_files = os.popen("find cache -name '*.c'").read().split("\n")
     for i in range(0, len(c_files)):
         c_files[i] = c_files[i][c_files[i].find('cache/')+6:]
-    print(c_files)
     for c_file in c_files:
+        if c_file == "":
+            continue
+        # string = compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2]
         os.popen(
-            compiler + " cache/" + c_file + "-I " + include + " " + linker + " -static -o" + c_file[:-2])
+            compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o" + c_file[:-2])
 
 
 if __name__ == "__main__":
-    compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/-lm")
+    compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
