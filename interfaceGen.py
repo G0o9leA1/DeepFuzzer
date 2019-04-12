@@ -63,11 +63,15 @@ def read_regular_type(var_type, var_name, file_name, minSize):
 
 
 def read_array_length(para, file_name, minSize):
+    string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
+    infile = open(file_name, 'at')
+    infile.write(string)
+    infile.close()
     minSize = minSize + "+sizeof(uint16_t) * " + "pointer_size_" + para.var_name
     check_file_size(minSize, file_name)
     infile = open(file_name, 'at')
     # int pointer_size = 1;
-    string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
+    string = ""
     for i in range(para.pointer_num):
         string = string + "uint16_t d" + str(i + 1) + "_" + para.var_name + ";\n"
         # fread( & d1_data, sizeof(uint16_t), 1, infile);
