@@ -1,64 +1,111 @@
-import sys, os, re, glob
+import sys
+import os
+import re
+import glob
 
+class StructureInfo:
+    def __init__(self, structure, source_dir, header_dir):
+        self.components = []  # structure definition in the form of [type, name, pointer, length]
+        self.verbose_components = []  # has full structure definition w/o parse
+        self.file_list = []
+        self.structure = structure
+        self.source_dir = source_dir
+        self.header_dir = header_dir
+        self.target = 'struct ' + structure
 
-def main(struct, sourcecode, headerfolder):
-    sourcecode = open(sourcecode, "r+")
+    def file_lookup(self):
+        self.file_list.append(self.source_dir)
 
-    found = False
+        if self.header_dir != "":
+            if self.header_dir[-1] == '\\' or self.header_dir[-1] == '/':
+                self.header_dir = self.header_dir + "*"
+            else:
+                self.header_dir = self.header_dir + "/*"
 
-    found = parser(struct, sourcecode)
+            for filename in glob.glob(self.header_dir):
+                self.file_list.append(filename)
 
-    if(headerfolder != ""):
-        headerfolder = headerfolder + "*"
-        for filename in glob.glob(headerfolder):
-            if(found == False):
-                headerfile = open(filename, "r+")
-                found = parser(struct, headerfile)
+    def parser_function(self):
+        for filename in self.file_list:
+            file = open(filename, "r+")
+            line = file.readline()
+            while self.target not in line:
+                line = file.readline()
+                if not line:
+                    break
 
+            if self.target in line:
+                # case of struct x {
+                if '{' in line:
+                    structinfo = line
+                    structinfo = file.readline()
+                    while '}' not in structinfo:
+                        list = structinfo.split()
+                        text = list[0] + " " + ''.join(list[1:]).replace(";", "").partition('//')[0]
+                        self.verbose_components.append(text)
 
-def parser(struct, file):
-    newfile = open("cache/structure_info.txt", "w")
+                        structinfo = file.readline()
+                # case of struct x
+                # {
+                else:
+                    structinfo = file.readline()
+                    structinfo = file.readline()
+                    while '}' not in structinfo:
+                        list = structinfo.split()
+                        text = list[0] + " " + ''.join(list[1:]).replace(";", "").partition('//')[0]
+                        self.verbose_components.append(text)
 
-    target = "struct " + struct
-    line = file.readline()
-    #print(line)
-    while target not in line:
-        line = file.readline()
-        if not line:
-            break
+                        structinfo = file.readline()
 
-    if target in line:
-        #case of struct x {
-        if '{' in line:
-            structinfo = line
-            structinfo = file.readline()
-            while '}' not in structinfo:
-                list = structinfo.split()
-                text = list[0] + ": " + ''.join(list[1:]) + '\n'
-                newfile.write(text)
-
-                structinfo = file.readline()
-        #case of struct x
-        #{
-        else:
-            structinfo = file.readline()
-            structinfo = file.readline()
-            while '}' not in structinfo:
-                list = structinfo.split()
-                text = list[0] + ": " + ''.join(list[1:]) + '\n'
-                newfile.write(text)
-
-                structinfo = file.readline()
+                file.close()
+                break
 
         file.close()
-        newfile.close()
-        return True
 
-    file.close()
-    newfile.close()
-    return False
+    def component_split(self):
+        for comp in self.verbose_components:
+            parts = comp.split()
+            typer = parts[0]
+            name = parts[1]
+            pointer = parts[1].count('*')
+            length = 0
+            if '[' in parts[1]:
+                length = re.search(r"\[([A-Za-z0-9_]+)\]", parts[1])
+                length = int(length.group(1))
+            array = [typer, name.replace("*", ""), pointer, length]
+            self.components.append(array)
+
+    def set_structure(self,structure):
+        self.structure = structure
+
+    def set_source_dir(self, source):
+        self.source_dir = source
+
+    def set_header_dir(self, header_dir):
+        self.header_dir = header_dir
+
+    def print_verbose_comp(self):
+        print(self.verbose_components)
+
+    def print_file_list(self):
+        print(self.file_list)
+
+    def print_components(self):
+        print(self.components)
+
+
+
+def main(structure, source_dir, header_dir):
+    struct_info = StructureInfo(structure, source_dir, header_dir)
+    struct_info.file_lookup()
+    struct_info.parser_function()
+    struct_info.component_split()
+    struct_info.print_components()
 
 
 if __name__ == "__main__":
     # filename = sys.argv[1]
-    main(sys.argv[1],sys.argv[2],sys.argv[3])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
+
+
+# return object containing arrays with Type, Name, Pointer (none,1,2,3), and length if necessary
