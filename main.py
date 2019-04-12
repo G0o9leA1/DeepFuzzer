@@ -45,3 +45,4 @@ if __name__ == "__main__":
         fn = lib_info.passed_functions[function_name]
         fn.write_includes(lib_info.includes)
         gen.generate_src(fn)
+    utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
