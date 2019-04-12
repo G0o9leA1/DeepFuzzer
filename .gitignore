@@ -39,3 +39,6 @@ Thumbs.db
 # IDE generated files #
 .idea
 .vscode
+
+# Cache File
+/cache/*

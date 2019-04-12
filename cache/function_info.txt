@@ -1,0 +1,130 @@
+FunctionName:auto_corr_fun
+Input:double *x,int32_t N,int64_t k,int16_t norm,double *rxx
+FunctionName:calc_residue
+Input:const int32_t *samples,int64_t N,int16_t ord,int16_t Q,int64_t *coff,int32_t *residues
+FunctionName:calc_signal
+Input:const int32_t *residues,int64_t N,int16_t ord,int16_t Q,int64_t *coff,int32_t *samples
+FunctionName:check_if_constant
+Input:const int16_t *data,int32_t num_elements
+FunctionName:compute_ref_coefs
+Input:double *autoc,uint8_t max_order,double *ref
+FunctionName:dqtz_ref_cof
+Input:const int32_t *q_ref,uint8_t ord,double *ref
+FunctionName:levinson
+Input:double *autoc,uint8_t max_order,double *ref,double lpc[][MAX_LPC_ORDER]
+FunctionName:levinson_fixed
+Input:int64_t *autocorr,uint8_t max_order,int64_t *ref,int64_t lpc[][MAX_LPC_ORDER]
+FunctionName:qtz_ref_cof
+Input:double *par,uint8_t ord,int32_t *q_ref
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/
+Include:#include <stdio.h>,#include <stdint.h>,#include <limits.h>,#include <math.h>,#include "lpc.h"
+Source:../sela/core/lpc.c
+Compiled Lib:../sela/libsela.a
+Include Folder../sela/include/

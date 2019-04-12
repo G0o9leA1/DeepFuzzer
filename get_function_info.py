@@ -8,11 +8,11 @@ info_file = "test/function_info.txt"
 class FnInput:
     def __init__(self, string):
         self.var_name = re.findall(r'[\w]+$', string)[0]
-        var_type=string[:string.rfind(self.var_name)]
+        var_type = string[:string.rfind(self.var_name)]
         # var_type = re.findall(r'^[\w?\s]+', string)[0]
         var_pointer = re.findall(r'\*', var_type)
         self.pointer_num = len(var_pointer)
-        if self.pointer_num !=0:
+        if self.pointer_num != 0:
             var_type = var_type[:var_type.find("*")]
         if var_type[-1] == ' ':
             var_type = var_type[:-1]
