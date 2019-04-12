@@ -35,14 +35,26 @@ if __name__ == "__main__":
     function_name = input()
     if function_name == "":
         for function_name in lib_info.passed_functions:
-            print("Writing harness for " + function_name)
+            utilites.print_green("Writing harness for " + function_name + " ", "")
+            try:
+                fn = lib_info.passed_functions[function_name]
+                fn.write_includes(lib_info.includes)
+                gen.generate_src(fn)
+                utilites.print_green("Done")
+            except all:
+                utilites.print_red("Failed")
+                pass
+
+    if function_name in lib_info.passed_functions:
+        utilites.print_green("Writing harness for " + function_name + " ", "")
+        try:
             fn = lib_info.passed_functions[function_name]
             fn.write_includes(lib_info.includes)
             gen.generate_src(fn)
-            print("Done for " + function_name)
-
-    if function_name in lib_info.passed_functions:
-        fn = lib_info.passed_functions[function_name]
-        fn.write_includes(lib_info.includes)
-        gen.generate_src(fn)
+            utilites.print_green("Done")
+        except all:
+            utilites.print_red("Failed")
+            pass
+    print("Try to compile!")
+    utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
     utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")

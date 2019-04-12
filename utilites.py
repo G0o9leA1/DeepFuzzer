@@ -1,4 +1,5 @@
 import os
+import time
 import sys
 
 def get_regular_types(filename):
@@ -59,10 +60,20 @@ def compile_gen(compiler,include,linker):
     for c_file in c_files:
         if c_file == "":
             continue
-        # string = compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2]
+        print_green(compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
         os.popen(
-            compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
+            compiler + " -w cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
+        time.sleep(.1)
+
+
+def print_green(string, end="\n"):
+    print('\033[1;32m '+string+' \033[0m', end=end)
+
+
+def print_red(string, end="\n"):
+    print('\033[1;31m '+string+' \033[0m', end=end)
 
 
 if __name__ == "__main__":
-    compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
+    # compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
+    print_red("a")
