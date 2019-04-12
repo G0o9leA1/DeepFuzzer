@@ -78,9 +78,9 @@ class LibraryInfo:
         for function in self.functions:
             utilites.print_green("Checking " + function.prototype + " ", "")
             if function.build:
-                utilites.print_green("passed")
+                utilites.print_green("PASSED!")
             else:
-                utilites.print_red("failed")
+                utilites.print_red("FAILED")
         print(str(len(self.passed_functions)) + " out of " + str(
             len(self.functions)) + " functions are fuzzable by DeepFuzzer")
 
