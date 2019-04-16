@@ -14,6 +14,7 @@ class StructureInfo:
         self.source_dir = source_dir
         self.header_dir = header_dir
         self.target = 'struct ' + structure
+        self.found_location = 'none'
 
     def file_lookup(self):
         self.file_list.append(self.source_dir)
@@ -37,13 +38,14 @@ class StructureInfo:
                     break
 
             if self.target in line:
+                self.found_location = filename
                 # case of struct x {
                 if '{' in line:
                     structinfo = line
                     structinfo = file.readline()
                     while '}' not in structinfo:
                         list = structinfo.split()
-                        text = list[0] + " " + ''.join(list[1:]).replace(";", "").partition('//')[0]
+                        text = list[0] + " " + ' '.join(list[1:]).replace(";", "").partition('//')[0]
                         self.verbose_components.append(text)
 
                         structinfo = file.readline()
@@ -54,7 +56,7 @@ class StructureInfo:
                     structinfo = file.readline()
                     while '}' not in structinfo:
                         list = structinfo.split()
-                        text = list[0] + " " + ''.join(list[1:]).replace(";", "").partition('//')[0]
+                        text = list[0] + " " + ' '.join(list[1:]).replace(";", "").partition('//')[0]
                         self.verbose_components.append(text)
 
                         structinfo = file.readline()
@@ -74,6 +76,9 @@ class StructureInfo:
             if '[' in parts[1]:
                 length = re.search(r"\[([A-Za-z0-9_]+)\]", parts[1])
                 length = int(length.group(1))
+            if 'struct' in comp:
+                typer = parts[0] + " " + parts[1]
+                name = parts[2]
             array = [typer, name.replace("*", ""), pointer, length]
             self.components.append(array)
 
@@ -95,18 +100,21 @@ class StructureInfo:
     def print_components(self):
         print(self.components)
 
+    def print_found_location(self):
+        print(self.found_location)
 
 def build(name, structure, source_dir, header_dir):
     struct_info = StructureInfo(name, structure, source_dir, header_dir)
     struct_info.file_lookup()
     struct_info.parser_function()
     struct_info.component_split()
+    struct_info.print_found_location()
     return struct_info
-    # struct_info.print_components()
+
 
 
 if __name__ == "__main__":
     # filename = sys.argv[1]
-    build(sys.argv[1], sys.argv[2], sys.argv[3]).print_components()
+    build(sys.argv[1], sys.argv[1], sys.argv[2], sys.argv[3]).print_components()
 
 # return object containing arrays with Type, Name, Pointer (none,1,2,3), and length if necessary
