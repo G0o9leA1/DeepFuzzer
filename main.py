@@ -33,6 +33,7 @@ if __name__ == "__main__":
     lib_info.build_stat()
     print("Please Type the name of one of the passed functions")
     print("If you want to generate all the fuzzable target, please press enter")
+    os.popen("rm cache/*")
     function_name = input()
     if function_name == "":
         for function_name in lib_info.passed_functions:
