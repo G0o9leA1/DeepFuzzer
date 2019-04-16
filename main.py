@@ -1,5 +1,6 @@
 import os
 import sys
+import platform
 import utilites
 import interfaceGen as gen
 import list_function as libobj
@@ -50,9 +51,8 @@ if __name__ == "__main__":
             except all:
                 utilites.print_red("Failed")
                 pass
-        exit()
 
-    if function_name in lib_info.passed_functions:
+    elif function_name in lib_info.passed_functions:
         utilites.print_green("Writing harness for " + function_name + " ", "")
         try:
             fn = lib_info.passed_functions[function_name]
@@ -67,6 +67,8 @@ if __name__ == "__main__":
         except all:
             utilites.print_red("Failed")
             pass
-    print("Try to compile!")
-    utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
-    # utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
+
+    if platform.system() == "Linux":
+        print("Try to compile!")
+        utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
+        utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")

@@ -205,7 +205,7 @@ class FnInfo:
                 self.build = False
                 break
         if self.build is True:
-            if utilites.function_checker(self, True) == "Error":
+            if utilites.function_checker(self) == "Error":
                 self.build = False
 
     def write_includes(self, includes):
