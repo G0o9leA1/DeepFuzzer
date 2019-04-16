@@ -9,14 +9,25 @@ info_file = "test/function_info.txt"
 
 
 def generate_filename(function):
+    """
+    generate interface name
+    :param function: FnInfo Object
+    :return: file name like "xxx_fuzz.c"
+    """
     return "cache/" + function.fn_name + "_fuzz.c"
 
 
-def generate_comment(filename, function):
-    infile = open(filename, "at")
+def generate_comment(file_name, function):
+    """
+    generate some useful comment
+    :param file_name: file writen to
+    :param function: FnInfo Object
+    :return:
+    """
+    infile = open(file_name, "at")
     string = "/*\n* Generate by Deepfuzzer\n"
     infile.write(string)
-    string = "* Target Function: " +function.prototype + "\n"
+    string = "* Target Function: " + function.prototype + "\n"
     infile.write(string)
     now = os.popen("date").read().split('\n')[0]
     string = "* Time: " + now+"\n*/\n\n"
@@ -24,15 +35,14 @@ def generate_comment(filename, function):
     infile.close()
 
 
-def generate_header(filename, function):
+def generate_header(file_name, function):
     """
-    Generate header
-
-    :param filename:
-    :param function:
+    generate #include<header>
+    :param file_name: file writen to
+    :param function: FnInfo Object
     :return:
     """
-    infile = open(filename, "at")
+    infile = open(file_name, "at")
     string = ""
     for include in function.includes:
         string += include+"\n"
@@ -46,32 +56,57 @@ def generate_header(filename, function):
     infile.close()
 
 
-def generate_debug(content):
+def generate_debug(file_name, content):
+    """
+    generate some debug info
+    :param file_name: file written to
+    :param content: debug message
+    :return:
+    """
     exit()
 
 
-def read_regular_type(var_type, var_name, file_name, minSize):
-    minSize = minSize + "+sizeof(" + var_type + ")"
-    check_file_size(minSize,file_name)
+def read_regular_type(para, file_name, min_size):
+    """
+    generate source code for a regular type
+    eg. int32_t num_elements;
+        fread(&num_elements, sizeof(int32_t), 1, infile);
+    :param para: variable
+    :param file_name: file written to
+    :param min_size: cumulative size
+    :return: cumulative size and size to read this data
+    """
+    min_size = min_size + "+sizeof(" + para.var_type + ")"
+    check_file_size(min_size, file_name)
     infile = open(file_name, 'at')
     # int32_t num_elements;
-    string = var_type+" "+var_name+";"
+    string = para.var_type+" "+para.var_name+";"
     # fread(&num_elements, sizeof(int32_t), 1, infile);
-    string = string + "fread(&" + var_name + ", sizeof(" + var_type + "),1,infile);\n\n"
+    string = string + "fread(&" + para.var_name + ", sizeof(" + para.var_type + "),1,infile);\n\n"
     infile.write(string)
     infile.close()
-    return minSize
+    return min_size
 
 
-def read_array_length(para, file_name, minSize):
+def read_array_length(para, file_name, min_size):
+    """
+    generate source code for a array length
+    :param para: variable
+    :param file_name: file written to
+    :param min_size: cumulative size
+    :return: cumulative size and size to read this data
+    """
+
+    # int pointer_size_data = 1;
     string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
     infile = open(file_name, 'at')
     infile.write(string)
     infile.close()
-    minSize = minSize + "+sizeof(uint16_t) * " + "pointer_size_" + para.var_name
-    check_file_size(minSize, file_name)
+
+    # min_size = min_size + sizeof(uint16_t) * pointer_size_data = 1
+    min_size = min_size + "+sizeof(uint16_t) * " + "pointer_size_" + para.var_name
+    check_file_size(min_size, file_name)
     infile = open(file_name, 'at')
-    # int pointer_size = 1;
     string = ""
     for i in range(para.pointer_num):
         string = string + "uint16_t d" + str(i + 1) + "_" + para.var_name + ";\n"
@@ -81,15 +116,22 @@ def read_array_length(para, file_name, minSize):
     infile.write(string)
     infile.close()
 
-    return minSize
+    return min_size
 
 
-def read_array_data(para, file_name, minSize):
+def read_array_data(para, file_name, min_size):
+    """
+        generate source code for read data for an array
+        :param para: variable
+        :param file_name: file written to
+        :param min_size: cumulative size
+        :return: cumulative size and size to read this data
+        """
     string = ""
     for i in range(para.pointer_num):
         string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
-    minSize = minSize + "+sizeof("+ para.var_type + ")*" +string[:-1]
-    check_file_size(minSize,file_name)
+    min_size = min_size + "+sizeof("+ para.var_type + ")*" +string[:-1]
+    check_file_size(min_size,file_name)
     infile = open(file_name, 'at')
     string = ""
 
@@ -127,34 +169,55 @@ def read_array_data(para, file_name, minSize):
         string = string + "*"
     string = string + para.var_name + "= reference_" + para.var_name + ";\n\n"
     infile.write(string)
-    return minSize
+    return min_size
 
 
 def check_file_size(size, file_name):
-    infile = open(file_name, 'at')
+    """
+    compare min_size with file_size
     # if (fileSize < sizeof(uint16_t) * pointer_size) {
     # fclose(infile);
     # return 0;
     # }
+    :param size: min_size
+    :param file_name: file written to
+    :return:
+    """
+    infile = open(file_name, 'at')
     string = "if(fileSize < " + size + "){fclose(infile);return 0;}"
     infile.write(string)
     infile.close()
 
 
-def read_const_array_data(para, file_name, minSize, length):
+def read_const_array_data(para, file_name, min_size, length):
+    """
+    generate source code for read data for a length-fixed array
+    :param para: variable
+    :param file_name: file written to
+    :param min_size: min_size
+    :param length: length of array
+    :return: cumulative size and size to read this data
+    """
     infile = open(file_name, 'at')
     para.pointer_num = para.pointer_num + 1
     string = "uint16_t d" + str(1) + "_" + para.var_name + "=" + str(length) + ";\n"
     infile.write(string)
     infile.close()
-    minSize = read_array_data(para, file_name, minSize)
+    min_size = read_array_data(para, file_name, min_size)
     para.pointer_num = para.pointer_num - 1
-    return minSize
+    return min_size
 
 
-
-def new_wrapper(filename,formalized_fn,function):
-    infile = open(filename, "at")
+def input_wrapper(file_name, formalized_fn, function):
+    """
+    generate main function
+    :param file_name: file written to
+    :param formalized_fn: formalized function
+    :param function: FnInfo Object
+    :return:
+    """
+    infile = open(file_name, "at")
+    # Open File and read fileSize
     string = "int main(int argc, char **argv){"
     string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
     infile.write(string)
@@ -163,9 +226,12 @@ def new_wrapper(filename,formalized_fn,function):
     string += "rewind(infile);\n\n"
     infile.write(string)
     infile.close()
+
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = ""
-    minSize = "minSize"
+    min_size = "minSize"
+
+    # generate source code for struct
     if len(struct_para) != 0:
         struct_info = dict()
         for i in range(0, len(struct_para)):
@@ -174,7 +240,7 @@ def new_wrapper(filename,formalized_fn,function):
             # struct_para[i].print_components()
             struct_info[struct_para[i].structure] = []
 
-            if struct_para[i].components == []:
+            if struct_para[i].components:
                 raise utilites.NotSupport
             else:
                 for component in struct_para[i].components:
@@ -190,13 +256,13 @@ def new_wrapper(filename,formalized_fn,function):
                 for para in struct_info[struct.structure]:
                     if para.pointer_num == 0:
                         if para.array_length == 0:
-                            minSize = read_regular_type(para.var_type, para.var_name, filename, minSize)
+                            min_size = read_regular_type(para, file_name, min_size)
                         else:
-                            minSize = read_const_array_data(para, filename, minSize, para.array_length)
+                            min_size = read_const_array_data(para, file_name, min_size, para.array_length)
                     else:
-                        minSize = read_array_length(para, filename, minSize)
-                        minSize = read_array_data(para, filename, minSize)
-                infile = open(filename, "at")
+                        min_size = read_array_length(para, file_name, min_size)
+                        min_size = read_array_data(para, file_name, min_size)
+                infile = open(file_name, "at")
                 infile.write("struct " + struct.structure + " reference_" + struct.name + "={ ")
                 string = ""
                 for para in struct_info[struct.structure]:
@@ -208,134 +274,13 @@ def new_wrapper(filename,formalized_fn,function):
 
     if regular_para_pointer is not None:
         for para in regular_para_pointer:
-            minSize = read_array_length(para, filename, minSize)
-            minSize = read_array_data(para,filename, minSize)
+            min_size = read_array_length(para, file_name, min_size)
+            min_size = read_array_data(para, file_name, min_size)
     for para in regular_para_nonepointer:
         if para.array_length == 0:
-            minSize = read_regular_type(para.var_type,para.var_name,filename,minSize)
+            min_size = read_regular_type(para, file_name, min_size)
         else:
-            minSize = read_const_array_data(para,filename,minSize,para.array_length)
-
-
-
-
-
-
-
-
-
-
-
-def input_wrapper(filename,formalized_fn):
-    infile = open(filename, "at")
-    string = "int main(int argc, char **argv){"
-    string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
-    infile.write(string)
-    string = "fseek(infile,0,SEEK_END);"
-    string += "int fileSize = (int)ftell(infile);"
-    string += "rewind(infile);\n\n"
-    infile.write(string)
-    infile.close()
-    [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
-    string = ""
-    if len(struct_para) == 0:
-        if regular_para_pointer is None:
-            infile.write("int pointer_size = 1;")
-        else:
-            pointer_size = 0
-            for para in regular_para_pointer:
-                pointer_size += para.pointer_num
-            infile.write("int pointer_size =" + str(pointer_size) + ";")
-
-        # if (fileSize < sizeof(uint16_t) * pointer_size) {
-        # return 0;
-        # }
-
-        infile.write("if(fileSize < sizeof(uint16_t)*pointer_size){fclose(infile);return 0;}\n\n")
-
-        for para in regular_para_pointer:
-            for i in range(para.pointer_num):
-                string = string + "uint16_t d" + str(i+1) + "_" + para.var_name + ";\n"
-                # fread( & d1_data, sizeof(uint16_t), 1, infile);
-                string = string + "fread(&d" + str(i+1) + "_" + para.var_name + ",sizeof(uint16_t),1,infile);\n\n"
-        infile.write(string)
-        # int minSize = sizeof(uint16_t) * pointer_size + sizeof(int) * d1_data + sizeof(int32_t);
-        string = "int minSize = sizeof(uint16_t)*pointer_size"
-
-        for para in regular_para_pointer:
-            string = string + "+sizeof(" + para.var_type + ")"
-            for i in range(para.pointer_num):
-                string = string + "*d" + str(i+1) + "_" + para.var_name
-
-        for para in regular_para_nonepointer:
-            string = string + "+sizeof(" + para.var_type + ")"
-
-        string = string + ";\n"
-        infile.write(string)
-        string = "if( minSize>fileSize ) {fclose(infile);return 0;}\n\n"
-        infile.write(string)
-
-        # int reference_data[d1_data];
-        # for (int i = 0; i < d1_data; ++i) {
-        #     int tmp_data;
-        # fread( & tmp_data, sizeof(int), 1, infile);
-        # reference_data[i] = tmp_data;
-        # }
-        # const int16_t * data = reference_data;
-
-        for para in regular_para_pointer:
-            string = ""
-
-            # int reference_data[d1_data];
-            if para.var_type.find("const") == 0:
-                string = string + para.var_type[6:]
-            else:
-                string = string + para.var_type
-            string = string + " reference_" + para.var_name + "["
-            for i in range(para.pointer_num):
-                string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
-            string = string[:-1] + "];"
-
-            # for (int i = 0; i < d1_data; ++i) {
-            string = string + "for(long int i=0;i<"
-            for i in range(para.pointer_num):
-                string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
-            string = string[:-1] + ";++i){"
-            #     int tmp_data;
-            if para.var_type.find("const") == 0:
-                string = string + para.var_type[6:]
-            else:
-                string = string + para.var_type
-            string = string + " tmp" + "_" + para.var_name + ";"
-
-            # fread( & tmp_data, sizeof(int), 1, infile);
-            string = string + "fread(&" + "tmp" + "_" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);"
-
-            # reference_data[i] = tmp_data;
-            string = string + " reference_" + para.var_name + "[i] = " + "tmp" + "_" + para.var_name + ";}"
-
-            # const int16_t * data = reference_data;
-            string = string + para.var_type + " "
-            for i in range(para.pointer_num):
-                string = string + "*"
-            string = string + para.var_name + "= reference_" + para.var_name + ";\n\n"
-            infile.write(string)
-
-        for para in regular_para_nonepointer:
-            string = ""
-            string = string + para.var_type + " " + para.var_name + ";"
-            # fread(&num_elements, sizeof(int32_t), 1, infile);
-            string = string + "fread(&" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);\n\n"
-            infile.write(string)
-    for para in regular_para_nonepointer:
-        para.input_dump()
-    for para in regular_para_pointer:
-        para.input_dump()
-    infile.write("fclose(infile);\n\n")
-
-
-def define_var():
-    exit()
+            min_size = read_const_array_data(para, file_name, min_size, para.array_length)
 
 
 def allocate_mem(para, buffer_name, buffer_type, buffer_count, filename):
@@ -358,8 +303,14 @@ def allocate_mem(para, buffer_name, buffer_type, buffer_count, filename):
 # def read_data()
 
 
-def generate_fuzz(filename,function):
-    infile = open(filename, "at")
+def generate_fuzz(file_name, function):
+    """
+    call the target function
+    :param file_name: file writen to
+    :param function: FnInfo object
+    :return:
+    """
+    infile = open(file_name, "at")
     string = ""
     for para in function.inputs:
         string += para.var_name+","
@@ -375,22 +326,32 @@ def generate_fuzz(filename,function):
 
 
 def generate_src(function):
-    filename = generate_filename(function)
-    if os.path.exists(filename):
-        os.remove(filename)
+    """
+    generate source code for target function
+    :param function: FnInfo Object
+    :return:
+    """
+    file_name = generate_filename(function)
+    if os.path.exists(file_name):
+        os.remove(file_name)
     formalized_fn = utilites.function_checker(function)
-    generate_comment(filename, function)
-    generate_header(filename, function)
+    generate_comment(file_name, function)
+    generate_header(file_name, function)
     # input_wrapper(filename, formalized_fn)
-    new_wrapper(filename, formalized_fn,function)
-    generate_fuzz(filename, function)
-    formatter(filename)
+    input_wrapper(file_name, formalized_fn, function)
+    generate_fuzz(file_name, function)
+    formatter(file_name)
 
 
-def formatter(filename):
+def formatter(file_name):
+    """
+    Clang Formatter to format source code
+    :param file_name: file written to
+    :return:
+    """
     os.system(
-        'clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" -sort-includes=false ' + filename + " > " + filename + ".format")
-    os.system("mv "+filename + ".format " + filename)
+        'clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" -sort-includes=false ' + file_name + " > " + file_name + ".format")
+    os.system("mv "+file_name + ".format " + file_name)
 
 
 if __name__ == "__main__":
