@@ -2,6 +2,11 @@ import os
 import time
 import sys
 
+
+class NotSupport(BaseException):
+    pass
+
+
 def get_regular_types(filename):
     """
     get regular types from file
@@ -20,13 +25,12 @@ def get_regular_types(filename):
 
 def function_checker(function, debug=False):
 
-    types = get_regular_types("utilties/types.txt")
     pointer_counter = 0
     regular_para_nonepointer = []
     regular_para_pointer = []
     struct_para = []
     for para in function.inputs:
-        if not is_regular_type(types, para.var_type):
+        if not is_regular_type(para.var_type):
             # return "Error"
             if debug:
                 print("Self Defined Structs Detected: " + para.var_type + " " + para.var_name)
@@ -35,6 +39,7 @@ def function_checker(function, debug=False):
                     print("Function Not Yet Supported\n")
                 return "Error"
             struct_para.append(para)
+
         else:
             if debug:
                 print("Regular Type Detected: " + para.var_type + " " + para.var_name)
@@ -49,7 +54,8 @@ def function_checker(function, debug=False):
     return [regular_para_nonepointer, regular_para_pointer, struct_para]
 
 
-def is_regular_type(regular_type, var_type):
+def is_regular_type(var_type):
+    regular_type = get_regular_types("utilties/types.txt")
     return var_type in regular_type
 
 

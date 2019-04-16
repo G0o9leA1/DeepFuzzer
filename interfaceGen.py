@@ -1,8 +1,9 @@
 import sys
 import os
 import subprocess
-import get_function_info as info
+import list_function as info
 import utilites
+import structfinder
 
 info_file = "test/function_info.txt"
 
@@ -140,7 +141,19 @@ def check_file_size(size, file_name):
     infile.close()
 
 
-def new_wrapper(filename,formalized_fn):
+def read_const_array_data(para, file_name, minSize, length):
+    infile = open(file_name, 'at')
+    para.pointer_num = para.pointer_num + 1
+    string = "uint16_t d" + str(1) + "_" + para.var_name + "=" + str(length) + ";\n"
+    infile.write(string)
+    infile.close()
+    minSize = read_array_data(para, file_name, minSize)
+    para.pointer_num = para.pointer_num - 1
+    return minSize
+
+
+
+def new_wrapper(filename,formalized_fn,function):
     infile = open(filename, "at")
     string = "int main(int argc, char **argv){"
     string += 'FILE *infile = fopen(argv[1],"rb");\n\n'
@@ -153,13 +166,61 @@ def new_wrapper(filename,formalized_fn):
     [regular_para_nonepointer, regular_para_pointer, struct_para] = formalized_fn
     string = ""
     minSize = "minSize"
-    if len(struct_para) == 0:
-        if regular_para_pointer is not None:
-            for para in regular_para_pointer:
-                minSize = read_array_length(para, filename, minSize)
-                minSize = read_array_data(para,filename, minSize)
-        for para in regular_para_nonepointer:
+    if len(struct_para) != 0:
+        struct_info = dict()
+        for i in range(0, len(struct_para)):
+            struct_para[i] = structfinder.build(struct_para[i].var_name, struct_para[i].var_type, function.source_dir,
+                                                function.header_dir)
+            # struct_para[i].print_components()
+            struct_info[struct_para[i].structure] = []
+
+            if struct_para[i].components == []:
+                raise utilites.NotSupport
+            else:
+                for component in struct_para[i].components:
+                    if not utilites.is_regular_type(component[0]):
+                        raise utilites.NotSupport
+                    if component[3] != 0:
+                        component[1] = component[1][:component[1].find('[')]
+                    para = info.FnInput("")
+                    para.set_input(component)
+                    struct_info[struct_para[i].structure].append(para)
+        for struct in struct_para:
+            if struct.structure in struct_info:
+                for para in struct_info[struct.structure]:
+                    if para.pointer_num == 0:
+                        if para.array_length == 0:
+                            minSize = read_regular_type(para.var_type, para.var_name, filename, minSize)
+                        else:
+                            minSize = read_const_array_data(para, filename, minSize, para.array_length)
+                    else:
+                        minSize = read_array_length(para, filename, minSize)
+                        minSize = read_array_data(para, filename, minSize)
+                infile = open(filename, "at")
+                infile.write("struct " + struct.structure + " reference_" + struct.name + "={ ")
+                string = ""
+                for para in struct_info[struct.structure]:
+                    string = string + para.var_name + ','
+                string = string[:-1] + "};"
+                string = string + "struct " + struct.structure + " *" + struct.name + "= &reference_" + struct.name + ";"
+                infile.write(string)
+                infile.close()
+
+    if regular_para_pointer is not None:
+        for para in regular_para_pointer:
+            minSize = read_array_length(para, filename, minSize)
+            minSize = read_array_data(para,filename, minSize)
+    for para in regular_para_nonepointer:
+        if para.array_length == 0:
             minSize = read_regular_type(para.var_type,para.var_name,filename,minSize)
+        else:
+            minSize = read_const_array_data(para,filename,minSize,para.array_length)
+
+
+
+
+
+
 
 
 
@@ -321,14 +382,14 @@ def generate_src(function):
     generate_comment(filename, function)
     generate_header(filename, function)
     # input_wrapper(filename, formalized_fn)
-    new_wrapper(filename, formalized_fn)
+    new_wrapper(filename, formalized_fn,function)
     generate_fuzz(filename, function)
     formatter(filename)
 
 
 def formatter(filename):
     os.system(
-        'clang-format -style="{BasedOnStyle: Chromium, IndentWidth: 4}" -sort-includes=false ' + filename + " > " + filename + ".format")
+        'clang-format -style="{BasedOnStyle: Google, IndentWidth: 4}" -sort-includes=false ' + filename + " > " + filename + ".format")
     os.system("mv "+filename + ".format " + filename)
 
 

@@ -116,26 +116,60 @@ class LibraryInfo:
 class FnInput:
     def __init__(self, string):
         try:
-            self.var_name = re.findall(r'[\w]+$', string)[0]
-            var_type = string[:string.rfind(self.var_name)]
-            # var_type = re.findall(r'^[\w?\s]+', string)[0]
-            var_pointer = re.findall(r'\*', var_type)
-            self.pointer_num = len(var_pointer)
-            if self.pointer_num != 0:
-                var_type = var_type[:var_type.find("*")]
-            if var_type[-1] == ' ':
-                var_type = var_type[:-1]
-            self.var_type = var_type
-            self.build = True
+            if string == "":
+                self.var_name = None
+                self.var_type = None
+                self.pointer_num = None
+                self.array_length = None
+                self.build = None
+            if string.count('[') == 0:
+                self.var_name = re.findall(r'[\w]+$', string)[0]
+                var_type = string[:string.rfind(self.var_name)]
+                # var_type = re.findall(r'^[\w?\s]+', string)[0]
+                var_pointer = re.findall(r'\*', var_type)
+                self.pointer_num = len(var_pointer)
+                self.array_length = 0
+                if self.pointer_num != 0:
+                    var_type = var_type[:var_type.find("*")]
+                if var_type[-1] == ' ':
+                    var_type = var_type[:-1]
+                self.var_type = var_type
+                self.build = True
+            elif string.count('[') == 1:
+                length_string = string[string.find('['):]
+                string = string[:string.find('[')]
+                print(string)
+                print(length_string)
+                self.var_name = re.findall(r'[\w]+$', string)[0]
+                var_type = string[:string.rfind(self.var_name)]
+                # var_type = re.findall(r'^[\w?\s]+', string)[0]
+                var_pointer = re.findall(r'\*', var_type)
+                self.pointer_num = len(var_pointer)
+                self.array_length = length_string[length_string.find('[')+1:length_string.find(']')]
+                if self.pointer_num != 0:
+                    var_type = var_type[:var_type.find("*")]
+                if var_type[-1] == ' ':
+                    var_type = var_type[:-1]
+                self.var_type = var_type
+                self.build = True
+                print(self.var_name)
+            else:
+                self.build = False
+
         except IndexError:
             # print("Not Support Yet")
             self.build = False
             pass
 
+    def set_input(self, struct):
+        [self.var_type, self.var_name, self.pointer_num, self.array_length] = struct
+        self.build = True
+
     def input_dump(self):
         print('    Type: ' + self.var_type)
         print('    Pointer: ' + str(self.pointer_num))
         print('    Name: ' + self.var_name)
+        print('    Array Length: ' + str(self.array_length))
         print('')
 
 
@@ -145,7 +179,9 @@ class FnInfo:
         self.prototype = ""
         self.inputs = []
         self.includes = []
+        self.header_dir = ""
         self.return_type = ""
+        self.source_dir = ""
         self.build = True
 
     def info_dump(self):
@@ -169,11 +205,17 @@ class FnInfo:
                 self.build = False
                 break
         if self.build is True:
-            if utilites.function_checker(self) == "Error":
+            if utilites.function_checker(self, True) == "Error":
                 self.build = False
 
     def write_includes(self, includes):
         self.includes = includes
+
+    def write_header_dir(self, header_dir):
+        self.header_dir = header_dir
+
+    def write_source_dir(self, source_dir):
+        self.source_dir = source_dir
 
 
 def main(filename, compiledlib, includefold):

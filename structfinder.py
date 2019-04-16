@@ -3,12 +3,14 @@ import os
 import re
 import glob
 
+
 class StructureInfo:
-    def __init__(self, structure, source_dir, header_dir):
+    def __init__(self, name, structure, source_dir, header_dir):
         self.components = []  # structure definition in the form of [type, name, pointer, length]
         self.verbose_components = []  # has full structure definition w/o parse
         self.file_list = []
         self.structure = structure
+        self.name = name
         self.source_dir = source_dir
         self.header_dir = header_dir
         self.target = 'struct ' + structure
@@ -94,18 +96,17 @@ class StructureInfo:
         print(self.components)
 
 
-
-def main(structure, source_dir, header_dir):
-    struct_info = StructureInfo(structure, source_dir, header_dir)
+def build(name, structure, source_dir, header_dir):
+    struct_info = StructureInfo(name, structure, source_dir, header_dir)
     struct_info.file_lookup()
     struct_info.parser_function()
     struct_info.component_split()
-    struct_info.print_components()
+    return struct_info
+    # struct_info.print_components()
 
 
 if __name__ == "__main__":
     # filename = sys.argv[1]
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
-
+    build(sys.argv[1], sys.argv[2], sys.argv[3]).print_components()
 
 # return object containing arrays with Type, Name, Pointer (none,1,2,3), and length if necessary

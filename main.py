@@ -39,22 +39,34 @@ if __name__ == "__main__":
             try:
                 fn = lib_info.passed_functions[function_name]
                 fn.write_includes(lib_info.includes)
+                fn.write_source_dir(lib_info.source_dir)
+                fn.write_header_dir(lib_info.header_dir)
                 gen.generate_src(fn)
                 utilites.print_green("Done")
+            except utilites.NotSupport:
+                os.popen("rm cache/"+function_name+"_fuzz.c")
+                utilites.print_red("Failed")
+                pass
             except all:
                 utilites.print_red("Failed")
                 pass
+        exit()
 
     if function_name in lib_info.passed_functions:
         utilites.print_green("Writing harness for " + function_name + " ", "")
         try:
             fn = lib_info.passed_functions[function_name]
             fn.write_includes(lib_info.includes)
+            fn.write_source_dir(lib_info.source_dir)
+            fn.write_header_dir(lib_info.header_dir)
             gen.generate_src(fn)
             utilites.print_green("Done")
+        except utilites.NotSupport:
+            utilites.print_red("Failed")
+            pass
         except all:
             utilites.print_red("Failed")
             pass
     print("Try to compile!")
     utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
-    utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
+    # utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
