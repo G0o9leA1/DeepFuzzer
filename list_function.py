@@ -5,6 +5,9 @@ import utilites
 
 
 class LibraryInfo:
+    """
+    Library Info Class
+    """
     def __init__(self, source_dir, binary_dir, header_dir):
         self.function_list = []
         self.functions = []
@@ -16,6 +19,10 @@ class LibraryInfo:
         self.name = source_dir[source_dir.rfind("/")+1:source_dir.find(".c")]
 
     def function_list_gen(self):
+        """
+        Using the ctag to find all function in source code
+        :return:
+        """
         # gets a list of all functions using ctags
         printout = os.popen(
             "find " + self.source_dir + " -type f -name '*.[ch]' -exec ctags -x --c-kinds=f {} ';'").read()
@@ -30,6 +37,10 @@ class LibraryInfo:
             self.function_list.append(function)
 
     def parse_function(self):
+        """
+        For each functions in source code generate an FnInfo object and append them into an arrry
+        :return:
+        """
         for function in self.function_list:
             final = []
             split = re.split("[,()]+", function)
@@ -52,11 +63,18 @@ class LibraryInfo:
                 flag = True
             line2 = line2[:-1]
             fn.prototype = fn.fn_name + "(" + line2 + ")"
+            fn.write_header_dir(self.header_dir)
+            fn.write_includes(self.includes)
+            fn.write_source_dir(self.source_dir)
             fn.parse_prototype()
             fn.check_build()
             self.append_function(fn)
 
     def includes_gen(self):
+        """
+        Extract #include from source code and store them in FnInfo object
+        :return:
+        """
         file = open(self.source_dir, 'r')
         line4 = ""
         for line in file:
@@ -70,11 +88,19 @@ class LibraryInfo:
             self.includes.append(include)
 
     def sum_passed(self):
+        """
+        Generate list which only contain compatible functions
+        :return:
+        """
         for function in self.functions:
             if function.build:
-                self.passed_functions[function.fn_name]=function
+                self.passed_functions[function.fn_name] = function
 
     def build_stat(self):
+        """
+        Print compatibility analysis result
+        :return:
+        """
         for function in self.functions:
             utilites.print_green("Checking " + function.prototype + " ", "")
             if function.build:
@@ -115,6 +141,10 @@ class LibraryInfo:
 
 class FnInput:
     def __init__(self, string):
+        """
+        Parse the FnInput object from a string
+        :param string:
+        """
         try:
             if string == "":
                 self.var_name = None
@@ -196,10 +226,19 @@ class FnInfo:
         #     print('    '+include)
 
     def parse_prototype(self):
+        """
+        using prototype to generate FnInput Object
+        :return:
+        """
         for para in (self.prototype.split('(')[1]).split(')')[0].split(','):
             self.inputs.append(FnInput(para))
 
     def check_build(self):
+        """
+        check whether FnInfo is built successfully,
+        if FnInput in FnInfo failed to build or FnInput cannot passed the function_checker, FnInput Build Failed
+        :return:
+        """
         for fn_input in self.inputs:
             if fn_input.build is False:
                 self.build = False
