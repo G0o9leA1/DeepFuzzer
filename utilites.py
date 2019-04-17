@@ -51,6 +51,7 @@ def function_checker(function, debug=False):
             struct_info = dict()
             if not struct_checker(para, function, struct_info):
                 return "Error"
+            para.write_struct_info(struct_info)
             struct_para.append(para)
 
         else:
@@ -79,7 +80,8 @@ def struct_checker(para, function, struct_info):
     struct = structfinder.build(para.var_name, para.var_type, function.source_dir, function.header_dir)
 
     struct_info[para.var_type] = []
-    if struct.components:
+    # struct.print_components()
+    if not struct.components:
         return False
     else:
         for component in struct.components:
@@ -89,14 +91,16 @@ def struct_checker(para, function, struct_info):
             struct_para.set_input(component)
             struct_info[para.var_type].append(struct_para)
             # recursively check until all the para in struct is regular type
+            # print(struct_para.var_type)
             if not is_regular_type(struct_para.var_type):
                 # not compatible if struct contain it self eg. linked list
-                if struct_para.var_type == para.var_type:
+                if struct_para.var_type in struct_info:
                     return False
+                    # return False
                 struct_checker(struct_para, function, struct_info)
-    for key in struct_info:
-        for fn in struct_info[key]:
-            fn.input_dump()
+    # for key in struct_info:
+    #     for fn in struct_info[key]:
+    #         fn.input_dump()
     return struct_info
 
 

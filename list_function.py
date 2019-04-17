@@ -152,6 +152,7 @@ class FnInput:
                 self.pointer_num = None
                 self.array_length = None
                 self.build = None
+                self.struct_info = None
             if string.count('[') == 0:
                 self.var_name = re.findall(r'[\w]+$', string)[0]
                 var_type = string[:string.rfind(self.var_name)]
@@ -165,6 +166,7 @@ class FnInput:
                     var_type = var_type[:-1]
                 self.var_type = var_type
                 self.build = True
+                self.struct_info = None
             elif string.count('[') == 1:
                 length_string = string[string.find('['):]
                 string = string[:string.find('[')]
@@ -181,6 +183,7 @@ class FnInput:
                 if var_type[-1] == ' ':
                     var_type = var_type[:-1]
                 self.var_type = var_type
+                self.struct_info = None
                 self.build = True
                 print(self.var_name)
             else:
@@ -190,6 +193,9 @@ class FnInput:
             # print("Not Support Yet")
             self.build = False
             pass
+
+    def write_struct_info(self, struct_info):
+        self.struct_info = struct_info
 
     def set_input(self, struct):
         [self.var_type, self.var_name, self.pointer_num, self.array_length] = struct
@@ -246,6 +252,8 @@ class FnInfo:
         if self.build is True:
             if utilites.function_checker(self) == "Error":
                 self.build = False
+
+
 
     def write_includes(self, includes):
         self.includes = includes

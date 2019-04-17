@@ -208,6 +208,39 @@ def read_const_array_data(para, file_name, min_size, length):
     return min_size
 
 
+def read_struct(para, struct, file_name, min_size):
+    for struct_para in para.struct_info[struct]:
+        if not utilites.is_regular_type(struct_para.var_type):
+            min_size = read_struct(para, struct_para.var_type, file_name, min_size)
+        else:
+            if struct_para.pointer_num == 0:
+                if struct_para.array_length == 0:
+                    min_size = read_regular_type(struct_para, file_name, min_size)
+                else:
+                    min_size = read_const_array_data(struct_para, file_name, min_size, para.array_length)
+            else:
+                min_size = read_array_length(struct_para, file_name, min_size)
+                min_size = read_array_data(struct_para, file_name, min_size)
+    infile = open(file_name, "at")
+    if struct != para.var_type:
+        infile.write("struct " + struct + " reference_" + struct + "={ ")
+        string = ""
+        for struct_para in para.struct_info[struct]:
+            string = string + struct_para + ','
+        string = string[:-1] + "};"
+        string = string + "struct " + struct + " *" + struct + "= &reference_" + struct + ";"
+    else:
+        infile.write("struct " + struct + " reference_" + para.var_name + "={ ")
+        string = ""
+        for struct_para in para.struct_info[struct]:
+            string = string + struct_para.var_name + ','
+        string = string[:-1] + "};"
+        string = string + "struct " + para.var_type + " *" + para.var_name + "= &reference_" + para.var_type + ";"
+    infile.write(string)
+    infile.close()
+    return min_size
+
+
 def input_wrapper(file_name, formalized_fn, function):
     """
     generate main function
@@ -233,44 +266,8 @@ def input_wrapper(file_name, formalized_fn, function):
 
     # generate source code for struct
     if len(struct_para) != 0:
-        struct_info = dict()
-        for i in range(0, len(struct_para)):
-            struct_para[i] = structfinder.build(struct_para[i].var_name, struct_para[i].var_type, function.source_dir,
-                                                function.header_dir)
-            # struct_para[i].print_components()
-            struct_info[struct_para[i].structure] = []
-
-            if struct_para[i].components:
-                raise utilites.NotSupport
-            else:
-                for component in struct_para[i].components:
-                    if not utilites.is_regular_type(component[0]):
-                        raise utilites.NotSupport
-                    if component[3] != 0:
-                        component[1] = component[1][:component[1].find('[')]
-                    para = info.FnInput("")
-                    para.set_input(component)
-                    struct_info[struct_para[i].structure].append(para)
-        for struct in struct_para:
-            if struct.structure in struct_info:
-                for para in struct_info[struct.structure]:
-                    if para.pointer_num == 0:
-                        if para.array_length == 0:
-                            min_size = read_regular_type(para, file_name, min_size)
-                        else:
-                            min_size = read_const_array_data(para, file_name, min_size, para.array_length)
-                    else:
-                        min_size = read_array_length(para, file_name, min_size)
-                        min_size = read_array_data(para, file_name, min_size)
-                infile = open(file_name, "at")
-                infile.write("struct " + struct.structure + " reference_" + struct.name + "={ ")
-                string = ""
-                for para in struct_info[struct.structure]:
-                    string = string + para.var_name + ','
-                string = string[:-1] + "};"
-                string = string + "struct " + struct.structure + " *" + struct.name + "= &reference_" + struct.name + ";"
-                infile.write(string)
-                infile.close()
+        for para in struct_para:
+            min_size = read_struct(para, para.var_type, file_name, min_size)
 
     if regular_para_pointer is not None:
         for para in regular_para_pointer:

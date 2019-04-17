@@ -103,14 +103,14 @@ class StructureInfo:
     def print_found_location(self):
         print(self.found_location)
 
+
 def build(name, structure, source_dir, header_dir):
     struct_info = StructureInfo(name, structure, source_dir, header_dir)
     struct_info.file_lookup()
     struct_info.parser_function()
     struct_info.component_split()
-    struct_info.print_found_location()
+    # struct_info.print_found_location()
     return struct_info
-
 
 
 if __name__ == "__main__":
