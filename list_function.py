@@ -30,11 +30,49 @@ class LibraryInfo:
         print("Found " + str(len(printout)) + " functions")
         self.function_list = []
 
+        re1 = '.*?'  # Non-greedy match on filler
+        re2 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re3 = '.*?'  # Non-greedy match on filler
+        re4 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re5 = '.*?'  # Non-greedy match on filler
+        re6 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re7 = '.*?'  # Non-greedy match on filler
+        re8 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re9 = '.*?'  # Non-greedy match on filler
+        re10 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re11 = '.*?'  # Non-greedy match on filler
+        re12 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re13 = '.*?'  # Non-greedy match on filler
+        re14 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        re15 = '.*?'  # Non-greedy match on filler
+        re16 = '((?:[a-z][a-z]+))'  # Word 1
+        re17 = '(\\s+)'  # White Space 1
+        re18 = '((?:[a-z][a-z]+))'  # Word 2
+        re19 = '(\\s+)'  # White Space 2
+        re20 = '((?:[a-z][a-z0-9_]*))'  # Variable Name 1
+        re21 = '(.)'  # Any Single Character 1
+
+        rg = re.compile(
+            re1 + re2 + re3 + re4 + re5 + re6 + re7 + re8 + re9 + re10 + re11 + re12 + re13 + re14 + re15 + re16 + re17 + re18 + re19 + re20 + re21,
+            re.IGNORECASE | re.DOTALL)
+
         # parses ctags output for last piece of each line
         for line in printout:
-            function = line.split("           ")
-            function = function[-1]
-            self.function_list.append(function)
+            index = line.find(self.source_dir) + len(self.source_dir) + 1
+            substring = line[index:]
+            if ')' not in substring:
+                file = open(self.source_dir, "r+")
+                text = file.readline()
+                while substring not in text:
+                    text = file.readline()
+                while True:
+                    textstring = file.readline()
+                    substring = substring + textstring
+                    if ')' in textstring:
+                        break
+
+            self.function_list.append(substring.replace('\n', ''))
+            #self.function_list.append(word)
 
     def parse_function(self):
         """
@@ -137,6 +175,11 @@ class LibraryInfo:
         print(self.binary_dir)
         print(self.header_dir)
         print(self.includes)
+
+    def print_func(self):
+        for x in self.function_list:
+            print(x + '\n')
+
 
 
 class FnInput:
@@ -269,9 +312,10 @@ def main(filename, compiledlib, includefold):
     lib_info = LibraryInfo(filename, compiledlib, includefold)
     file = open(filename, "r")
     lib_info.function_list_gen()
-    lib_info.parse_function()
-    lib_info.includes_gen()
-    lib_info.dump_info()
+    # lib_info.parse_function()
+    # lib_info.includes_gen()
+    # lib_info.dump_info()
+    lib_info.print_func()
 
 
 if __name__ == "__main__":
