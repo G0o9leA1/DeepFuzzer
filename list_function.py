@@ -24,55 +24,63 @@ class LibraryInfo:
         :return:
         """
         # gets a list of all functions using ctags
-        printout = os.popen(
-            "find " + self.source_dir + " -type f -name '*.[ch]' -exec ctags -x --c-kinds=f {} ';'").read()
-        printout = printout.splitlines()
-        print("Found " + str(len(printout)) + " functions")
-        self.function_list = []
+        # printout = os.popen(
+        #     "find " + self.source_dir + " -type f -name '*.[ch]' -exec ctags -x --c-kinds=f {} ';'").read()
+        # printout = printout.splitlines()
+        # print("Found " + str(len(printout)) + " functions")
+        # self.function_list = []
+        #
+        # re1 = '.*?'  # Non-greedy match on filler
+        # re2 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re3 = '.*?'  # Non-greedy match on filler
+        # re4 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re5 = '.*?'  # Non-greedy match on filler
+        # re6 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re7 = '.*?'  # Non-greedy match on filler
+        # re8 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re9 = '.*?'  # Non-greedy match on filler
+        # re10 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re11 = '.*?'  # Non-greedy match on filler
+        # re12 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re13 = '.*?'  # Non-greedy match on filler
+        # re14 = '(?:[a-z][a-z]+)'  # Uninteresting: word
+        # re15 = '.*?'  # Non-greedy match on filler
+        # re16 = '((?:[a-z][a-z]+))'  # Word 1
+        # re17 = '(\\s+)'  # White Space 1
+        # re18 = '((?:[a-z][a-z]+))'  # Word 2
+        # re19 = '(\\s+)'  # White Space 2
+        # re20 = '((?:[a-z][a-z0-9_]*))'  # Variable Name 1
+        # re21 = '(.)'  # Any Single Character 1
+        #
+        # rg = re.compile(
+        #     re1 + re2 + re3 + re4 + re5 + re6 + re7 + re8 + re9 + re10 + re11 + re12 + re13 + re14 + re15 + re16 + re17 + re18 + re19 + re20 + re21,
+        #     re.IGNORECASE | re.DOTALL
 
-        re1 = '.*?'  # Non-greedy match on filler
-        re2 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re3 = '.*?'  # Non-greedy match on filler
-        re4 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re5 = '.*?'  # Non-greedy match on filler
-        re6 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re7 = '.*?'  # Non-greedy match on filler
-        re8 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re9 = '.*?'  # Non-greedy match on filler
-        re10 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re11 = '.*?'  # Non-greedy match on filler
-        re12 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re13 = '.*?'  # Non-greedy match on filler
-        re14 = '(?:[a-z][a-z]+)'  # Uninteresting: word
-        re15 = '.*?'  # Non-greedy match on filler
-        re16 = '((?:[a-z][a-z]+))'  # Word 1
-        re17 = '(\\s+)'  # White Space 1
-        re18 = '((?:[a-z][a-z]+))'  # Word 2
-        re19 = '(\\s+)'  # White Space 2
-        re20 = '((?:[a-z][a-z0-9_]*))'  # Variable Name 1
-        re21 = '(.)'  # Any Single Character 1
+        # # parses ctags output for last piece of each line
+        # for line in printout:
+        #     index = line.find(self.source_dir) + len(self.source_dir) + 1
+        #     substring = line[index:]
+        #     if ')' not in substring:
+        #         file = open(self.source_dir, "r+")
+        #         text = file.readline()
+        #         while substring not in text:
+        #             text = file.readline()
+        #         while True:
+        #             textstring = file.readline()
+        #             substring = substring + textstring
+        #             if ')' in textstring:
+        #                 break
+        #
+        #     self.function_list.append(substring.replace('\n', ''))
+        #     #self.function_list.append(word)
 
-        rg = re.compile(
-            re1 + re2 + re3 + re4 + re5 + re6 + re7 + re8 + re9 + re10 + re11 + re12 + re13 + re14 + re15 + re16 + re17 + re18 + re19 + re20 + re21,
-            re.IGNORECASE | re.DOTALL)
-
-        # parses ctags output for last piece of each line
+        printout = os.popen("cproto " + self.source_dir)
+        boolean = False
         for line in printout:
-            index = line.find(self.source_dir) + len(self.source_dir) + 1
-            substring = line[index:]
-            if ')' not in substring:
-                file = open(self.source_dir, "r+")
-                text = file.readline()
-                while substring not in text:
-                    text = file.readline()
-                while True:
-                    textstring = file.readline()
-                    substring = substring + textstring
-                    if ')' in textstring:
-                        break
-
-            self.function_list.append(substring.replace('\n', ''))
-            #self.function_list.append(word)
+            if not boolean:
+                boolean = True
+            elif 'syntax error' not in line:
+                self.function_list.append(line)
 
     def parse_function(self):
         """
