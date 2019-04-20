@@ -312,10 +312,10 @@ def main(filename, compiledlib, includefold):
     lib_info = LibraryInfo(filename, compiledlib, includefold)
     file = open(filename, "r")
     lib_info.function_list_gen()
-    # lib_info.parse_function()
-    # lib_info.includes_gen()
-    # lib_info.dump_info()
-    lib_info.print_func()
+    lib_info.parse_function()
+    lib_info.includes_gen()
+    lib_info.dump_info()
+    # lib_info.print_func()
 
 
 if __name__ == "__main__":
