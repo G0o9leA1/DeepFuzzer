@@ -80,7 +80,7 @@ class LibraryInfo:
             if not boolean:
                 boolean = True
             elif 'syntax error' not in line:
-                self.function_list.append(line)
+                self.function_list.append(line.replace('\n', ''))
 
     def parse_function(self):
         """
@@ -330,4 +330,5 @@ if __name__ == "__main__":
     # filename = sys.argv[1]
     lib_info = LibraryInfo(sys.argv[1],sys.argv[2],sys.argv[3])
     lib_info.function_list_gen()
+    print('hello')
     lib_info.print_func()
