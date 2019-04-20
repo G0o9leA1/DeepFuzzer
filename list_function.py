@@ -328,4 +328,6 @@ def main(filename, compiledlib, includefold):
 
 if __name__ == "__main__":
     # filename = sys.argv[1]
-    main(sys.argv[1],sys.argv[2],sys.argv[3])
+    lib_info = LibraryInfo(sys.argv[1],sys.argv[2],sys.argv[3])
+    lib_info.function_list_gen()
+    lib_info.print_func()
