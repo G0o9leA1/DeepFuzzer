@@ -1,0 +1,35 @@
+Dumping wav_tags:
+RecordDecl 0x1c128d8 <../include/wavutils.h:24:9, line:44:1> line:24:16 struct wav_tags definition
+|-FieldDecl 0x1c12990 <line:26:2, col:8> col:8 referenced title 'char *'
+|-FieldDecl 0x1c12a10 <line:27:2, col:9> col:9 referenced title_present 'int8_t':'signed char'
+|-FieldDecl 0x1c12a68 <line:28:2, col:10> col:10 referenced title_size 'int32_t':'int'
+|-FieldDecl 0x1c12ac0 <line:29:2, col:8> col:8 referenced artist 'char *'
+|-FieldDecl 0x1c12b18 <line:30:2, col:9> col:9 referenced artist_present 'int8_t':'signed char'
+|-FieldDecl 0x1c12b70 <line:31:2, col:10> col:10 referenced artist_size 'int32_t':'int'
+|-FieldDecl 0x1c12bc8 <line:32:2, col:8> col:8 referenced album 'char *'
+|-FieldDecl 0x1c12c20 <line:33:2, col:9> col:9 referenced album_present 'int8_t':'signed char'
+|-FieldDecl 0x1c12c78 <line:34:2, col:10> col:10 referenced album_size 'int32_t':'int'
+|-FieldDecl 0x1c12cd0 <line:35:2, col:8> col:8 referenced genre 'char *'
+|-FieldDecl 0x1c12d28 <line:36:2, col:9> col:9 referenced genre_present 'int8_t':'signed char'
+|-FieldDecl 0x1c12d80 <line:37:2, col:10> col:10 referenced genre_size 'int32_t':'int'
+|-FieldDecl 0x1c12dd8 <line:38:2, col:8> col:8 referenced year 'char *'
+|-FieldDecl 0x1c12e30 <line:39:2, col:9> col:9 referenced year_present 'int8_t':'signed char'
+|-FieldDecl 0x1c12e88 <line:40:2, col:10> col:10 referenced year_size 'int32_t':'int'
+|-FieldDecl 0x1c12ee0 <line:41:2, col:8> col:8 referenced comment 'char *'
+|-FieldDecl 0x1c12f38 <line:42:2, col:9> col:9 referenced comment_present 'int8_t':'signed char'
+`-FieldDecl 0x1c12f90 <line:43:2, col:10> col:10 referenced comment_size 'int32_t':'int'
+
+Dumping wav_tags:
+TypedefDecl 0x1c13030 <../include/wavutils.h:24:1, line:44:2> col:2 referenced wav_tags 'struct wav_tags':'struct wav_tags'
+`-ElaboratedType 0x1c12fe0 'struct wav_tags' sugar
+  `-RecordType 0x1c12960 'struct wav_tags'
+    `-Record 0x1c128d8 'wav_tags'
+
+Dumping init_wav_tags:
+FunctionDecl 0x1c14a50 <../include/wavutils.h:58:1, col:34> col:6 init_wav_tags 'void (wav_tags *)'
+`-ParmVarDecl 0x1c14948 <col:20, col:30> col:30 tags 'wav_tags *'
+
+Dumping destroy_wav_tags:
+FunctionDecl 0x1c14b98 <../include/wavutils.h:59:1, col:37> col:6 destroy_wav_tags 'void (wav_tags *)'
+`-ParmVarDecl 0x1c14b10 <col:23, col:33> col:33 tags 'wav_tags *'
+

@@ -16,6 +16,10 @@ class StructureInfo:
         self.target = 'struct ' + structure
         self.found_location = 'none'
 
+    # clang-check -ast-dump -ast-dump-filter = rice_decode_context apev2.c -- -I.. / include / |
+    # perl - pe 's/\e\[?.*?[\@-~]//g'
+
+
     def file_lookup(self):
         self.file_list.append(self.source_dir)
 

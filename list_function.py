@@ -74,7 +74,7 @@ class LibraryInfo:
         #     self.function_list.append(substring.replace('\n', ''))
         #     #self.function_list.append(word)
 
-        printout = os.popen("cproto " + self.source_dir)
+        printout = os.popen("cproto " + self.source_dir + ' 2>/dev/null')
         boolean = False
         for line in printout:
             if not boolean:
