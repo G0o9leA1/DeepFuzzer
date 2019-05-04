@@ -238,19 +238,19 @@ def read_struct(para, struct, file_name, min_size):
 
     infile = open(file_name, "at")
     if struct != para.var_type:
-        infile.write("struct " + struct + " reference_" + struct + "={ ")
+        infile.write(struct + " reference_" + struct + "={ ")
         string = ""
         for struct_para in para.struct_info[struct]:
             string = string + struct_para + ','
         string = string[:-1] + "};"
         string = string + "struct " + struct + " *" + struct + "= &reference_" + struct + ";"
     else:
-        infile.write("struct " + struct + " reference_" + para.var_name + "={ ")
+        infile.write(struct + " reference_" + para.var_name + "={ ")
         string = ""
         for struct_para in para.struct_info[struct]:
             string = string + struct_para.var_name + ','
         string = string[:-1] + "};"
-        string = string + "struct " + para.var_type + " *" + para.var_name + "= &reference_" + para.var_name + ";"
+        string = string + para.var_type + " *" + para.var_name + "= &reference_" + para.var_name + ";"
     infile.write(string)
     infile.close()
     return min_size
