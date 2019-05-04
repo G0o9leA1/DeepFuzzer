@@ -78,7 +78,6 @@ def struct_checker(para, function, struct_info):
     """
     # para.input_dump()
     struct = structfinder.build(para.var_name, para.var_type, function.source_dir, function.header_dir)
-
     struct_info[para.var_type] = []
     # struct.print_components()
     if not struct.components:
@@ -92,8 +91,9 @@ def struct_checker(para, function, struct_info):
             struct_info[para.var_type].append(struct_para)
             # recursively check until all the para in struct is regular type
             # print(struct_para.var_type)
-            if not is_regular_type(struct_para.var_type):
+            if struct_para.pointer_num == 0 and not is_regular_type(struct_para.var_type):
                 # not compatible if struct contain it self eg. linked list
+                struct.print_components()
                 if struct_para.var_type in struct_info:
                     return False
                     # return False

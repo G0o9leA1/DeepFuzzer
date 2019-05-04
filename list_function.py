@@ -8,7 +8,7 @@ class LibraryInfo:
     """
     Library Info Class
     """
-    def __init__(self, source_dir, binary_dir, header_dir):
+    def __init__(self, source_dir, header_dir, binary_dir):
         self.function_list = []
         self.functions = []
         self.passed_functions = dict()
@@ -73,8 +73,8 @@ class LibraryInfo:
         #
         #     self.function_list.append(substring.replace('\n', ''))
         #     #self.function_list.append(word)
-
-        printout = os.popen("cproto " + self.source_dir + ' 2>/dev/null')
+        print("cproto " + "-I " + self.header_dir + " "+ self.source_dir + ' 2>/dev/null')
+        printout = os.popen("cproto " + "-I " + self.header_dir + " "+ self.source_dir + ' 2>/dev/null')
         boolean = False
         for line in printout:
             if not boolean:
@@ -94,12 +94,8 @@ class LibraryInfo:
                 if re.match(r'\s', part):
                     part = part[1:]
                 final.append(part)
-            name = final[0].split()
-            if len(name) == 2:
-                fn = FnInfo(name[1])
-            else:
-                fn = FnInfo(name[0])
-
+            name = split[0].split(" ")[-1]
+            fn = FnInfo(name)
             line2 = ""
             flag = False
             final2 = final[:-1]
@@ -112,6 +108,7 @@ class LibraryInfo:
             fn.write_header_dir(self.header_dir)
             fn.write_includes(self.includes)
             fn.write_source_dir(self.source_dir)
+            print(fn.prototype)
             fn.parse_prototype()
             fn.check_build()
             self.append_function(fn)

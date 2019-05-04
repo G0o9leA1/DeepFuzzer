@@ -208,10 +208,24 @@ def read_const_array_data(para, file_name, min_size, length):
     return min_size
 
 
+def read_struct_null_pointer(para, file_name):
+    infile = open(file_name, 'at')
+    string = "struct " + para.var_type + " "
+    for star in range(para.pointer_num):
+        string += '*'
+    string = string + " " + para.var_name + " =NULL;"
+    print(string)
+    infile.write(string)
+    infile.close()
+
+
 def read_struct(para, struct, file_name, min_size):
     for struct_para in para.struct_info[struct]:
         if not utilites.is_regular_type(struct_para.var_type):
-            min_size = read_struct(para, struct_para.var_type, file_name, min_size)
+            if struct_para.pointer_num == 0:
+                min_size = read_struct(para, struct_para.var_type, file_name, min_size)
+            else:
+                read_struct_null_pointer(struct_para, file_name)
         else:
             if struct_para.pointer_num == 0:
                 if struct_para.array_length == 0:
@@ -221,6 +235,7 @@ def read_struct(para, struct, file_name, min_size):
             else:
                 min_size = read_array_length(struct_para, file_name, min_size)
                 min_size = read_array_data(struct_para, file_name, min_size)
+
     infile = open(file_name, "at")
     if struct != para.var_type:
         infile.write("struct " + struct + " reference_" + struct + "={ ")
@@ -266,6 +281,7 @@ def input_wrapper(file_name, formalized_fn, function):
 
     # generate source code for struct
     if len(struct_para) != 0:
+        print(struct_para)
         for para in struct_para:
             min_size = read_struct(para, para.var_type, file_name, min_size)
 
