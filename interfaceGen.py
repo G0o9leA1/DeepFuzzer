@@ -287,8 +287,11 @@ def input_wrapper(file_name, formalized_fn, function):
 
     if regular_para_pointer is not None:
         for para in regular_para_pointer:
-            min_size = read_array_length(para, file_name, min_size)
-            min_size = read_array_data(para, file_name, min_size)
+            if para.var_type == 'FILE':
+                read_struct_null_pointer(para, file_name)
+            else:
+                min_size = read_array_length(para, file_name, min_size)
+                min_size = read_array_data(para, file_name, min_size)
     for para in regular_para_nonepointer:
         if para.array_length == 0:
             min_size = read_regular_type(para, file_name, min_size)

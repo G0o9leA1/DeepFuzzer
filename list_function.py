@@ -186,7 +186,6 @@ class LibraryInfo:
             print(x + '\n')
 
 
-
 class FnInput:
     def __init__(self, string):
         """
@@ -194,6 +193,7 @@ class FnInput:
         :param string:
         """
         try:
+            self.var_type=None
             if string == "":
                 self.var_name = None
                 self.var_type = None
@@ -236,6 +236,8 @@ class FnInput:
                 print(self.var_name)
             else:
                 self.build = False
+            if self.var_type == 'size_t':
+                self.var_type = 'int'
 
         except IndexError:
             # print("Not Support Yet")
@@ -300,8 +302,6 @@ class FnInfo:
         if self.build is True:
             if utilites.function_checker(self) == "Error":
                 self.build = False
-
-
 
     def write_includes(self, includes):
         self.includes = includes

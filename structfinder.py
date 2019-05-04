@@ -80,8 +80,9 @@ class StructureInfo:
                 length = re.search(r"\[([A-Za-z0-9_]+)\]", parts[1])
                 length = int(length.group(1))
             if 'struct' in comp:
-                typer = parts[1]
+                typer = parts[0]+" "+parts[1]
                 name = parts[2]
+                pointer = parts[2].count('*')
             array = [typer, name.replace("*", ""), pointer, length]
             self.components.append(array)
 
