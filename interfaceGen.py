@@ -210,7 +210,7 @@ def read_const_array_data(para, file_name, min_size, length):
 
 def read_struct_null_pointer(para, file_name):
     infile = open(file_name, 'at')
-    string = "struct " + para.var_type + " "
+    string = para.var_type + " "
     for star in range(para.pointer_num):
         string += '*'
     string = string + " " + para.var_name + " =NULL;"
