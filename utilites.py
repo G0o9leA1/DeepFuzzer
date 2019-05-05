@@ -79,7 +79,7 @@ def struct_checker(para, function, struct_info):
     # para.input_dump()
     struct = structfinder.build(para.var_name, para.var_type, function.source_dir, function.header_dir)
     struct_info[para.var_type] = []
-    struct.print_components()
+    # struct.print_components()
     if not struct.components:
         return False
     else:

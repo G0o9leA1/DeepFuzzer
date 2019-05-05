@@ -243,7 +243,7 @@ def read_struct(para, struct, file_name, min_size):
         for struct_para in para.struct_info[struct]:
             string = string + struct_para + ','
         string = string[:-1] + "};"
-        string = string + "struct " + struct + " *" + struct + "= &reference_" + struct + ";"
+        string = string + struct + " *" + struct + "= &reference_" + struct + ";"
     else:
         infile.write(struct + " reference_" + para.var_name + "={ ")
         string = ""
@@ -281,7 +281,7 @@ def input_wrapper(file_name, formalized_fn, function):
 
     # generate source code for struct
     if len(struct_para) != 0:
-        print(struct_para)
+        # print(struct_para)
         for para in struct_para:
             min_size = read_struct(para, para.var_type, file_name, min_size)
 

@@ -12,8 +12,8 @@ if __name__ == "__main__":
         sys.exit(
             "Usage: python " + 'main.py' + " <source code path>" + " <compiled binary file path>" + " <include directory path>")
     source_dir = sys.argv[1]
-    binary_dir = sys.argv[2]
-    include_dir = sys.argv[3]
+    binary_dir = sys.argv[3]
+    include_dir = sys.argv[2]
     if not os.path.exists(source_dir):
         sys.exit("Error: File '" + sys.argv[1] + "' not found")
     if not os.path.exists(binary_dir):
@@ -21,11 +21,11 @@ if __name__ == "__main__":
     if not os.path.exists(include_dir):
         sys.exit("Error: File '" + sys.argv[3] + "' not found")
 
-    lib_info = libobj.LibraryInfo(source_dir, binary_dir, include_dir)
+    lib_info = libobj.LibraryInfo(source_dir, include_dir, binary_dir)
     print("Library: "+lib_info.name)
     print("Source Code Path: "+lib_info.source_dir)
     print("Compiled Binary Path:"+lib_info.binary_dir)
-    print("Include Directory Path:"+include_dir)
+    print("Include Directory Path:"+lib_info.header_dir)
     lib_info.function_list_gen()
     lib_info.parse_function()
     lib_info.includes_gen()
