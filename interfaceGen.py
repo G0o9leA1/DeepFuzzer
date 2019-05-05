@@ -66,7 +66,30 @@ def generate_debug(file_name, content):
     exit()
 
 
-def read_regular_type(para, file_name, min_size):
+def read_regular_type_wname(var_type, var_name, file_name, min_size):
+    """
+    generate source code for a regular type
+    eg. int32_t num_elements;
+        fread(&num_elements, sizeof(int32_t), 1, infile);
+    :param var_type: variable type
+    :param var_type: variable name
+    :param file_name: file written to
+    :param min_size: cumulative size
+    :return: cumulative size and size to read this data
+    """
+    min_size = min_size + "+sizeof(" + var_type + ")"
+    check_file_size(min_size, file_name)
+    infile = open(file_name, 'at')
+    # int32_t num_elements;
+    string = var_type+" " + var_name+";"
+    # fread(&num_elements, sizeof(int32_t), 1, infile);
+    string = string + "fread(&" + var_name + ", sizeof(" + var_type + "),1,infile);\n\n"
+    infile.write(string)
+    infile.close()
+    return min_size
+
+
+def read_regular_type(para, file_name, min_size, var_name=''):
     """
     generate source code for a regular type
     eg. int32_t num_elements;
@@ -74,44 +97,49 @@ def read_regular_type(para, file_name, min_size):
     :param para: variable
     :param file_name: file written to
     :param min_size: cumulative size
+    :param var_name: name you want to give
     :return: cumulative size and size to read this data
     """
-    min_size = min_size + "+sizeof(" + para.var_type + ")"
-    check_file_size(min_size, file_name)
-    infile = open(file_name, 'at')
-    # int32_t num_elements;
-    string = para.var_type+" "+para.var_name+";"
-    # fread(&num_elements, sizeof(int32_t), 1, infile);
-    string = string + "fread(&" + para.var_name + ", sizeof(" + para.var_type + "),1,infile);\n\n"
-    infile.write(string)
-    infile.close()
-    return min_size
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    return read_regular_type_wname(var_type, var_name, file_name, min_size)
 
 
-def read_array_length(para, file_name, min_size):
+def read_array_length(para, file_name, min_size, var_name=''):
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    pointer = para.pointer_num
+    return read_array_length_wname(var_type, var_name, pointer, file_name, min_size)
+
+
+def read_array_length_wname(var_type, var_name, pointer,  file_name, min_size):
     """
     generate source code for a array length
-    :param para: variable
+    :param var_type:
+    :param var_name:
+    :param pointer
     :param file_name: file written to
     :param min_size: cumulative size
     :return: cumulative size and size to read this data
     """
 
     # int pointer_size_data = 1;
-    string = "int " + "pointer_size_" + para.var_name + "=" + str(para.pointer_num) + ";"
+    string = "int " + "pointer_size_" + var_name + "=" + str(pointer) + ";"
     infile = open(file_name, 'at')
     infile.write(string)
     infile.close()
 
     # min_size = min_size + sizeof(uint16_t) * pointer_size_data = 1
-    min_size = min_size + "+sizeof(uint16_t) * " + "pointer_size_" + para.var_name
+    min_size = min_size + "+sizeof(uint16_t) * " + "pointer_size_" + var_name
     check_file_size(min_size, file_name)
     infile = open(file_name, 'at')
     string = ""
-    for i in range(para.pointer_num):
-        string = string + "uint16_t d" + str(i + 1) + "_" + para.var_name + ";\n"
+    for i in range(pointer):
+        string = string + "uint16_t d" + str(i + 1) + "_" + var_name + ";\n"
         # fread( & d1_data, sizeof(uint16_t), 1, infile);
-        string = string + "fread(&d" + str(i + 1) + "_" + para.var_name + ",sizeof(uint16_t),1,infile);"
+        string = string + "fread(&d" + str(i + 1) + "_" + var_name + ",sizeof(uint16_t),1,infile);"
     # print(string)
     infile.write(string)
     infile.close()
@@ -119,55 +147,73 @@ def read_array_length(para, file_name, min_size):
     return min_size
 
 
-def read_array_data(para, file_name, min_size):
+def read_array_data(para, file_name, min_size, var_name=''):
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    pointer_num = para.pointer_num
+    return read_array_data_wname(var_type, var_name, pointer_num, file_name, min_size)
+
+
+def read_null_pointer(para, file_name, var_name=''):
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    pointer_num = para.pointer_num
+    read_struct_null_pointer_wname(var_type, var_name, pointer_num, file_name)
+
+
+def read_array_data_wname(var_type, var_name, pointer_num, file_name, min_size):
     """
         generate source code for read data for an array
-        :param para: variable
+        :param var_type
+        :param var_name
+        :param pointer_num
         :param file_name: file written to
         :param min_size: cumulative size
         :return: cumulative size and size to read this data
         """
     string = ""
-    for i in range(para.pointer_num):
-        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
-    min_size = min_size + "+sizeof("+ para.var_type + ")*" +string[:-1]
-    check_file_size(min_size,file_name)
+    for i in range(pointer_num):
+        string = string + "d" + str(i + 1) + "_" + var_name + "*"
+    min_size = min_size + "+sizeof(" + var_type + ")*" + string[:-1]
+    check_file_size(min_size, file_name)
     infile = open(file_name, 'at')
     string = ""
 
     # int reference_data[d1_data];
-    if para.var_type.find("const") == 0:
-        string = string + para.var_type[6:]
+    if var_type.find("const") == 0:
+        string = string + var_type[6:]
     else:
-        string = string + para.var_type
-    string = string + " reference_" + para.var_name + "["
-    for i in range(para.pointer_num):
-        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+        string = string + var_type
+    string = string + " reference_" + var_name + "["
+    for i in range(pointer_num):
+        string = string + "d" + str(i + 1) + "_" + var_name + "*"
     string = string[:-1] + "];"
 
     # for (int i = 0; i < d1_data; ++i) {
     string = string + "for(long int i=0;i<"
-    for i in range(para.pointer_num):
-        string = string + "d" + str(i + 1) + "_" + para.var_name + "*"
+    for i in range(pointer_num):
+        string = string + "d" + str(i + 1) + "_" + var_name + "*"
     string = string[:-1] + ";++i){"
     #     int tmp_data;
-    if para.var_type.find("const") == 0:
-        string = string + para.var_type[6:]
+    if var_type.find("const") == 0:
+        string = string + var_type[6:]
     else:
-        string = string + para.var_type
-    string = string + " tmp" + "_" + para.var_name + ";"
+        string = string + var_type
+    string = string + " tmp" + "_" + var_name + ";"
 
     # fread( & tmp_data, sizeof(int), 1, infile);
-    string = string + "fread(&" + "tmp" + "_" + para.var_name + ",sizeof(" + para.var_type + "),1,infile);"
+    string = string + "fread(&" + "tmp" + "_" + var_name + ",sizeof(" + var_type + "),1,infile);"
 
     # reference_data[i] = tmp_data;
-    string = string + " reference_" + para.var_name + "[i] = " + "tmp" + "_" + para.var_name + ";}"
+    string = string + " reference_" + var_name + "[i] = " + "tmp" + "_" + var_name + ";}"
 
     # const int16_t * data = reference_data;
-    string = string + para.var_type + " "
-    for i in range(para.pointer_num):
+    string = string + var_type + " "
+    for i in range(pointer_num):
         string = string + "*"
-    string = string + para.var_name + "= reference_" + para.var_name + ";\n\n"
+    string = string + var_name + "= reference_" + var_name + ";\n\n"
     infile.write(string)
     return min_size
 
@@ -189,32 +235,47 @@ def check_file_size(size, file_name):
     infile.close()
 
 
-def read_const_array_data(para, file_name, min_size, length):
+def read_const_array_data(para, file_name, min_size, length, var_name=''):
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    pointer_num = para.pointer_num
+    return read_const_array_data_wname(var_type, var_name, pointer_num, file_name, min_size, length)
+
+
+def read_const_array_data_wname(var_type, var_name, pointer_num, file_name, min_size, length):
     """
     generate source code for read data for a length-fixed array
-    :param para: variable
+    :param var_type
+    :param var_name
+    :param pointer_num
     :param file_name: file written to
     :param min_size: min_size
     :param length: length of array
     :return: cumulative size and size to read this data
     """
     infile = open(file_name, 'at')
-    para.pointer_num = para.pointer_num + 1
-    string = "uint16_t d" + str(1) + "_" + para.var_name + "=" + str(length) + ";\n"
+    pointer_num = pointer_num + 1
+    string = "uint16_t d" + str(1) + "_" + var_name + "=" + str(length) + ";\n"
     infile.write(string)
     infile.close()
-    min_size = read_array_data(para, file_name, min_size)
-    para.pointer_num = para.pointer_num - 1
-    return min_size
+    return read_array_data_wname(var_type, var_name, pointer_num, file_name, min_size)
 
 
-def read_struct_null_pointer(para, file_name):
+def read_struct_null_pointer(para, file_name, var_name=''):
+    if var_name == '':
+        var_name = para.var_name
+    var_type = para.var_type
+    pointer_num = para.pointer_num
+    read_struct_null_pointer_wname(var_type, var_name, pointer_num, file_name)
+
+
+def read_struct_null_pointer_wname(var_type, var_name, pointer_num, file_name):
     infile = open(file_name, 'at')
-    string = para.var_type + " "
-    for star in range(para.pointer_num):
+    string = var_type + " "
+    for star in range(pointer_num):
         string += '*'
-    string = string + " " + para.var_name + " =NULL;"
-    print(string)
+    string = string + " " + var_name + " =NULL;"
     infile.write(string)
     infile.close()
 
@@ -223,21 +284,22 @@ def read_struct(para, struct, file_name, min_size):
     for struct_para in para.struct_info[struct]:
         if not utilites.is_regular_type(struct_para.var_type):
             if struct_para.pointer_num == 0:
-                min_size = read_struct(para, struct_para.var_type, file_name, min_size)
+                raise utilites.NotSupport
             else:
-                read_struct_null_pointer(struct_para, file_name)
+                read_struct_null_pointer(struct_para, file_name, para.var_name + '_' + struct_para.var_name)
         else:
             if struct_para.pointer_num == 0:
                 if struct_para.array_length == 0:
-                    min_size = read_regular_type(struct_para, file_name, min_size)
+                    min_size = read_regular_type(struct_para, file_name, min_size, para.var_name + '_' + struct_para.var_name)
                 else:
-                    min_size = read_const_array_data(struct_para, file_name, min_size, para.array_length)
+                    min_size = read_const_array_data(struct_para, file_name, min_size, para.array_length, para.var_name + '_' + struct_para.var_name)
             else:
-                min_size = read_array_length(struct_para, file_name, min_size)
-                min_size = read_array_data(struct_para, file_name, min_size)
+                min_size = read_array_length(struct_para, file_name, min_size, para.var_name + '_' + struct_para.var_name)
+                min_size = read_array_data(struct_para, file_name, min_size, para.var_name + '_' + struct_para.var_name)
 
     infile = open(file_name, "at")
     if struct != para.var_type:
+        print('fuck')
         infile.write(struct + " reference_" + struct + "={ ")
         string = ""
         for struct_para in para.struct_info[struct]:
@@ -248,7 +310,7 @@ def read_struct(para, struct, file_name, min_size):
         infile.write(struct + " reference_" + para.var_name + "={ ")
         string = ""
         for struct_para in para.struct_info[struct]:
-            string = string + struct_para.var_name + ','
+            string = string + para.var_name + '_' + struct_para.var_name + ','
         string = string[:-1] + "};"
         string = string + para.var_type + " *" + para.var_name + "= &reference_" + para.var_name + ";"
     infile.write(string)
@@ -287,12 +349,14 @@ def input_wrapper(file_name, formalized_fn, function):
 
     if regular_para_pointer is not None:
         for para in regular_para_pointer:
-            if para.var_type == 'FILE':
+            # para.input_dump()
+            if para.var_type == 'FILE' or para.pointer_num > 1:
                 read_struct_null_pointer(para, file_name)
             else:
                 min_size = read_array_length(para, file_name, min_size)
                 min_size = read_array_data(para, file_name, min_size)
     for para in regular_para_nonepointer:
+        # para.input_dump()
         if para.array_length == 0:
             min_size = read_regular_type(para, file_name, min_size)
         else:

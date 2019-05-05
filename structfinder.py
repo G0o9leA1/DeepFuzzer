@@ -40,14 +40,19 @@ class StructureInfo:
                     var_type = var_type[:var_type.find(':')]
                     var_type = var_type[:-1]
                 pointer = var_type.count('*')
-                var_type=re.sub(r'\s+','',var_type)
                 var_type=var_type.replace('*', '')
                 length =0
-                if var_type.find('[')!=-1:
+                if var_type.count('[') >= 2:
+                    var_type = re.sub(r'\s+', '', var_type)
+                    var_name = var_name + var_type[var_type.find('['):]
+                    pointer= pointer + var_type.count('[')
+                elif var_type.find('[')!=-1:
+                    var_type = re.sub(r'\s+', '', var_type)
                     var_name= var_name+ var_type[var_type.find('['):]
                     length = re.search(r"\[([A-Za-z0-9_]+)\]", var_name)
                     length = int(length.group(1))
                     var_type=var_type[:var_type.find('[')]
+                var_type = var_type.rstrip()
                 compond_info = [var_type, var_name, pointer, length]
                 self.components.append(compond_info)
                 # print('type: '+var_type+' name: ' + var_name+' pointer: ' + str(pointer) + ' length:'+ str(length))
@@ -154,7 +159,7 @@ def build(name, structure, source_dir, header_dir):
 
 if __name__ == "__main__":
     # filename = sys.argv[1]
-    stinfo=StructureInfo('a', 'apev2_item', '../sela/core/apev2.c', '../sela/include')
+    stinfo=StructureInfo('a', 'apev2_tag_item', '../sela/core/apev2.c', '../sela/include')
     stinfo.clang_struct_finder()
 
 # return object containing arrays with Type, Name, Pointer (none,1,2,3), and length if necessary

@@ -218,8 +218,6 @@ class FnInput:
             elif string.count('[') == 1:
                 length_string = string[string.find('['):]
                 string = string[:string.find('[')]
-                print(string)
-                print(length_string)
                 self.var_name = re.findall(r'[\w]+$', string)[0]
                 var_type = string[:string.rfind(self.var_name)]
                 # var_type = re.findall(r'^[\w?\s]+', string)[0]
@@ -233,7 +231,19 @@ class FnInput:
                 self.var_type = var_type
                 self.struct_info = None
                 self.build = True
-                print(self.var_name)
+            elif string.count('[') >1:
+                string = string[:string.find('[')]
+                self.var_name = re.findall(r'[\w]+$', string)[0]
+                var_type = string[:string.rfind(self.var_name)]
+                self.pointer_num = 3
+                self.array_length = 0
+                if self.pointer_num != 0:
+                    var_type = var_type[:var_type.find("*")]
+                if var_type[-1] == ' ':
+                    var_type = var_type[:-1]
+                self.var_type = var_type
+                self.struct_info = None
+                self.build = True
             else:
                 self.build = False
             if self.var_type == 'size_t':

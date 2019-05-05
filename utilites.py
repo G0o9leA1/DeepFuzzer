@@ -47,7 +47,6 @@ def function_checker(function, debug=False):
             if para.pointer_num >= 2:
                 if debug:
                     print("Function Not Yet Supported\n")
-                return "Error"
             struct_info = dict()
             if not struct_checker(para, function, struct_info):
                 return "Error"
@@ -60,10 +59,9 @@ def function_checker(function, debug=False):
             if para.pointer_num > 1:
                 if debug:
                     print("Function Not Yet Supported\n")
-                return "Error"
             if para.pointer_num == 0:
                 regular_para_nonepointer.append(para)
-            if para.pointer_num == 1:
+            if para.pointer_num >= 1:
                 regular_para_pointer.append(para)
     return [regular_para_nonepointer, regular_para_pointer, struct_para]
 
@@ -94,9 +92,6 @@ def struct_checker(para, function, struct_info):
             if struct_para.pointer_num == 0 and not is_regular_type(struct_para.var_type):
                 # not compatible if struct contain it self eg. linked list
                 struct.print_components()
-                print(struct_para.var_type)
-                print(struct_para.pointer_num)
-                print(struct_info)
                 if struct_para.var_type in struct_info:
                     return False
                     # return False
