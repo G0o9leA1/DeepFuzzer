@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import subprocess
 import structfinder
 import list_function as info
 
@@ -143,9 +144,9 @@ def compile_gen(include, linker, compiler='afl-gcc'):
             continue
         print_green(
             compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
-        os.popen(
-            compiler + " -w cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
-        time.sleep(.1)
+        process=subprocess.Popen(
+            compiler + " -w cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2], shell=True)
+        process.wait()
 
 
 def print_green(string, end="\n"):
