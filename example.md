@@ -12,7 +12,7 @@ If you are sure you have already downloaded all library we need, go to Download 
     sudo apt-get install clang-check
     sudo apt-get install cproto
 
-##Install AFL
+## Install AFL
     wget http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
     tar xvf afl-latest.tgz a
     rm afl-latest.tgz 
