@@ -7,7 +7,7 @@ If you are sure you have already downloaded all library we need, go to Download 
     sudo apt-get upgrade
 
 ## Install Required Library
-    sudo apt-get install build-essential git
+    sudo apt-get install build-essential git vim
     sudo apt-get install clang
     sudo apt-get install clang-check
     sudo apt-get install cproto
