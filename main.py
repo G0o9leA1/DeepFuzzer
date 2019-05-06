@@ -24,8 +24,8 @@ if __name__ == "__main__":
     lib_info = libobj.LibraryInfo(source_dir, include_dir, binary_dir)
     print("Library: "+lib_info.name)
     print("Source Code Path: "+lib_info.source_dir)
-    print("Compiled Binary Path:"+lib_info.binary_dir)
     print("Include Directory Path:"+lib_info.header_dir)
+    print("Compiled Binary Path:"+lib_info.binary_dir)
     lib_info.function_list_gen()
     lib_info.parse_function()
     lib_info.includes_gen()
@@ -33,7 +33,6 @@ if __name__ == "__main__":
     lib_info.build_stat()
     print("Please Type the name of one of the passed functions")
     print("If you want to generate all the fuzzable target, please press enter")
-    os.popen("rm cache/*")
     function_name = input()
     if function_name == "":
         for function_name in lib_info.passed_functions:
@@ -63,6 +62,7 @@ if __name__ == "__main__":
             gen.generate_src(fn)
             utilites.print_green("Done")
         except utilites.NotSupport:
+            os.popen("rm cache/" + function_name + "_fuzz.c")
             utilites.print_red("Failed")
             pass
         except all:
@@ -73,3 +73,6 @@ if __name__ == "__main__":
         print("Try to compile!")
         utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
         utilites.compile_gen(include_dir, binary_dir)
+        utilites.postprocess()
+        utilites.print_green('Generated Harness Source Code in out/src')
+        utilites.print_green('Generated Executable in out/bin')

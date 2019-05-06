@@ -1,4 +1,5 @@
 import os
+import shutil
 import time
 import structfinder
 import list_function as info
@@ -165,6 +166,25 @@ def print_red(string, end="\n"):
     :return:
     """
     print('\033[1;31m '+string+' \033[0m', end=end)
+
+
+def postprocess():
+    if not os.path.exists('out/src'):
+        os.makedirs('out/src')
+    if not os.path.exists('out/bin'):
+        os.makedirs('out/bin')
+    source = os.listdir('cache')
+    destination = 'out/src'
+    for files in source:
+        if files.endswith(".c"):
+            shutil.move('cache/'+files, destination)
+    destination = 'out/bin'
+    source = os.listdir('cache')
+    for files in source:
+        shutil.move('cache/'+files, destination)
+    source = os.listdir('out/bin')
+    for file in source:
+        os.chmod('out/bin/'+file, 0o777)
 
 
 if __name__ == "__main__":
