@@ -40,7 +40,11 @@ def function_checker(function, debug=False):
     regular_para_pointer = []
     struct_para = []
     for para in function.inputs:
-        if not is_regular_type(para.var_type):
+        var_type = para.var_type
+        if para.var_type.rfind(' ') !=-1:
+            var_type = para.var_type[para.var_type.rfind(' ')+1:]
+
+        if not is_regular_type(var_type):
             # return "Error"
             if debug:
                 print("Self Defined Structs Detected: " + para.var_type + " " + para.var_name)
@@ -108,11 +112,11 @@ def is_regular_type(var_type):
     :param var_type: para type
     :return: True of False
     """
-    regular_type = get_regular_types("utilties/types.txt")
+    regular_type = get_regular_types("utilities/types.txt")
     return var_type in regular_type
 
 
-def compile_gen(compiler,include,linker):
+def compile_gen(include, linker, compiler='afl-gcc'):
     """
     Try to compile
     :param compiler: CC
@@ -120,13 +124,24 @@ def compile_gen(compiler,include,linker):
     :param linker: -L
     :return: no return
     """
+    alib = linker[linker.rfind('/')+1:]
+    linker = '-L ' + linker[:linker.rfind('/')] + ' -l' + alib.replace('lib', '', 1).replace('.a','',1)
     c_files = os.popen("find cache -name '*.c'").read().split("\n")
     for i in range(0, len(c_files)):
         c_files[i] = c_files[i][c_files[i].find('cache/')+6:]
+    infile = open('utilities/compile_flag.txt','r')
+    extra_linker_flag = ' '
+    for line in infile:
+        if line[0:2] == 'CC=':
+            compiler = line[3:]
+        if line[0:11] == 'LinkerFlag=':
+            extra_linker_flag += line[11:-1]
+    linker = linker + extra_linker_flag
     for c_file in c_files:
         if c_file == "":
             continue
-        print_green(compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
+        print_green(
+            compiler + " cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
         os.popen(
             compiler + " -w cache/" + c_file + " -I " + include + " " + linker + " -static -o cache/" + c_file[:-2])
         time.sleep(.1)

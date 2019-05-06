@@ -52,6 +52,8 @@ def generate_header(file_name, function):
         infile.write("#include <inttypes.h>\n")
     if "#include <stdlib.h>" not in function.includes:
         infile.write("#include <stdlib.h>\n")
+    if "#include <stdio.h>" not in function.includes:
+        infile.write("#include <stdio.h>\n")
     infile.write("\n")
     infile.close()
 

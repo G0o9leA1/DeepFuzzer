@@ -27,6 +27,7 @@ class StructureInfo:
         else:
             structure_name = self.structure[self.structure.find('struct ')+7:]
         cmd = 'clang-check -ast-dump ' + self.source_dir + ' -ast-dump-filter=' + structure_name + ' -- -I' + self.header_dir + no_color
+        print(cmd)
         result = os.popen(cmd)
         for line in result:
             if line == '\n':

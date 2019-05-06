@@ -72,4 +72,4 @@ if __name__ == "__main__":
     if platform.system() == "Linux":
         print("Try to compile!")
         utilites.print_red("NOTE: Compile may fail for multiple reasons, Please CHECK AGAIN")
-        utilites.compile_gen("afl-gcc", "../sela/include/", "-lsela -L ../sela/ -lm")
+        utilites.compile_gen(include_dir, binary_dir)

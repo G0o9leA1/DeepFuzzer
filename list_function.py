@@ -95,6 +95,7 @@ class LibraryInfo:
                     part = part[1:]
                 final.append(part)
             name = split[0].split(" ")[-1]
+            name = name.lstrip('*')
             fn = FnInfo(name)
             line2 = ""
             flag = False
@@ -213,8 +214,10 @@ class FnInput:
                 if var_type[-1] == ' ':
                     var_type = var_type[:-1]
                 self.var_type = var_type
+                self.var_type = var_type
                 self.build = True
                 self.struct_info = None
+                print(var_type)
             elif string.count('[') == 1:
                 length_string = string[string.find('['):]
                 string = string[:string.find('[')]
@@ -246,7 +249,7 @@ class FnInput:
                 self.build = True
             else:
                 self.build = False
-            if self.var_type == 'size_t':
+            if self.var_type == 'size_t'or 'void':
                 self.var_type = 'int'
 
         except IndexError:
@@ -305,6 +308,8 @@ class FnInfo:
         if FnInput in FnInfo failed to build or FnInput cannot passed the function_checker, FnInput Build Failed
         :return:
         """
+        if self.fn_name == 'main':
+            self.build = False
         for fn_input in self.inputs:
             if fn_input.build is False:
                 self.build = False
