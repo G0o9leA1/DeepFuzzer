@@ -9,12 +9,12 @@ If you are sure you have already downloaded all library we need, go to Download 
 ## Install Required Library
     sudo apt-get install build-essential git vim
     sudo apt-get install clang
-    sudo apt-get install clang-check
+    sudo apt-get install clang-format
     sudo apt-get install cproto
 
 ## Install AFL
     wget http://lcamtuf.coredump.cx/afl/releases/afl-latest.tgz
-    tar xvf afl-latest.tgz a
+    tar xvf afl-latest.tgz
     rm afl-latest.tgz 
     cd afl-2.52b/ && make
     sudo make install
@@ -38,12 +38,12 @@ If you are sure you have already downloaded all library we need, go to Download 
     export CC=gcc
 
 ## Pack .o file into a static library
-    ar rc libsela.a
+    ar rc libsela.a *.o
     cd ..
 
 ## Add necessary link flag into compile_flag.txt
     cd DeepFuzzer
-    vim Utilities/compile_flag.txt
+    vim utilities/compile_flag.txt
     cd ..
     
 ## Run DeepFuzzer
