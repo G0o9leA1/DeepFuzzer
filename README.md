@@ -7,7 +7,7 @@
 
     
 ## Usage:
-    python3 main.py <source code path> <compiled binary file path> <include directory path>
+    python3 main.py <source code path> <include directory path> <compiled binary file path>
 
 ## Example:
 Here is an detail [example](./example.md) about how to use DeepFuzzer
