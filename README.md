@@ -1,8 +1,9 @@
 # DeepFuzzer: 
  
 ## Dependences:
-    sudo apt install ctags
+    sudo apt install clang
     sudo apt install clang-format
+    sudo apt-get install cproto
 
     
 ## Usage:
