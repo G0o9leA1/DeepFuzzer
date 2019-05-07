@@ -3,7 +3,7 @@
 ## Dependences:
     sudo apt install clang
     sudo apt install clang-format
-    sudo apt-get install cproto
+    sudo apt install cproto
 
     
 ## Usage:
