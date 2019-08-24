@@ -1,4 +1,7 @@
 # DeepFuzzer: 
+
+## Report:    
+[Project Report](https://github.com/z1Tion/DeepFuzzer/blob/master/doc/Final%20Report.pdf)
  
 ## Dependences:
     sudo apt install clang
